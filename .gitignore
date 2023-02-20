@@ -1,0 +1,6 @@
+# Python virtual environment
+.venv/
+
+# Django
+db.sqlite3
+rental_app/__pycache__
