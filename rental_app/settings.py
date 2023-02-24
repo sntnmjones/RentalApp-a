@@ -24,10 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
-print('Loading SECRET_KEY from .env')
+if (SECRET_KEY != ""):
+    print('Loaded SECRET_KEY from .env')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.getenv('DEBUG'))
+print(f'Debug = {DEBUG}')
 
 ALLOWED_HOSTS = []
 
