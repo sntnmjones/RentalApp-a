@@ -26,6 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 if (SECRET_KEY != ""):
     print('Loaded SECRET_KEY from .env')
+else:
+    print('No SECRET_KEY found in .env. Exiting...')
+    exit()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str(os.getenv('DEBUG'))
