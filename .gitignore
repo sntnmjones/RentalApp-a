@@ -3,7 +3,7 @@
 
 # Django
 db.sqlite3
-rental_app/__pycache__
+__pycache__
 
 # Environment variables
 .env
