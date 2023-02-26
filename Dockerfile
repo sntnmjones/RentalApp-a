@@ -6,6 +6,10 @@ FROM python:3.10
 # to the terminal with out buffering it first
 ENV PYTHONUNBUFFERED 1
 
+RUN apt update && \
+    # Install postgres packages
+    apt install -y libpq-dev gcc
+
 # create root directory for our project in the container
 RUN mkdir /rental_app
 
