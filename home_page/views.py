@@ -1,8 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+import logging
 
+logger = logging.getLogger()
 
 def index(request):
+    logger.info("Hello info!")
+    logger.warning("Hello warning!")
+    logger.error("Hello error!")
+    logger.critical("Hello critical!")
     return render(
         request,
         template_name="home_page/templates/home_page/index.html",

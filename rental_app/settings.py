@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv("SECRET_KEY"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # get_env_var("DEBUG")
+DEBUG = str(os.getenv("DEBUG"))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -126,3 +126,35 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+############################################################
+# LOGGING CONFIGURATION
+############################################################
+THIRTY_DAYS_IN_HOURS = 30 * 24
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "root": {"level": "INFO", "handlers": ["default"], "propagate": True},
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s [%(levelname)s][pid:%(process)d][thread:%(thread)d][%(pathname)s:%(lineno)d] %(message)s"
+        }
+    },
+    "handlers": {
+        "default": {
+            "level": "INFO",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": "application.log",
+            "when": "H",
+            "backupCount": THIRTY_DAYS_IN_HOURS,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "default": {
+            "handlers": ["default"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
