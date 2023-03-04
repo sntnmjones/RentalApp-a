@@ -18,6 +18,7 @@ from django.urls import include, path
 from home_page import urls as home_page_urls
 
 urlpatterns = [
+    path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
     path('', include(home_page_urls)),
 ]
