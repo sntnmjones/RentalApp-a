@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -117,12 +118,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = "static/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -159,3 +154,23 @@ LOGGING = {
         },
     },
 }
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Examples from "docker-compose up":
+# print(f'STATIC_ROOT: {STATIC_ROOT}')
+# print(f'BASE_DIR: {BASE_DIR}')
+# rental_app  | BASE_DIR: /rental_app
+# rental_app  | STATIC_ROOT: /rental_app/static
+
+STATIC_URL = "/staticfiles/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+import logging
+
+log = logging.getLogger(__name__)
+print(f"STATIC_ROOT: {STATIC_ROOT}")
+print(f"BASE_DIR: {BASE_DIR}")
+STATICFILES_DIRS = [
+    'rental_app/static',
+    'home_page/static',
+]

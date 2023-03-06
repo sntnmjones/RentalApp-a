@@ -21,3 +21,6 @@ ADD . /rental_app/
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
+
+# Collects the static files into STATIC_ROOT.
+RUN python3 manage.py collectstatic --noinput
