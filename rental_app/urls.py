@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from main import urls as home_page_urls
+from main import urls as main_urls
+from property import urls as property_urls
 from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("admin/", admin.site.urls),
-    path("", include(home_page_urls)),
+    path("", include(main_urls)),
+    path("property/", include(property_urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

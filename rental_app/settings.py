@@ -172,4 +172,5 @@ print(f"STATIC_ROOT: {STATIC_ROOT}")
 print(f"BASE_DIR: {BASE_DIR}")
 STATICFILES_DIRS = [
     'main/static/css',
+    'property/static/css',
 ]
