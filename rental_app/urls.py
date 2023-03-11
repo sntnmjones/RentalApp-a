@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from home_page import urls as home_page_urls
+from main import urls as home_page_urls
 from django.conf.urls.static import static
 from django.conf import settings
 

@@ -171,5 +171,5 @@ log = logging.getLogger(__name__)
 print(f"STATIC_ROOT: {STATIC_ROOT}")
 print(f"BASE_DIR: {BASE_DIR}")
 STATICFILES_DIRS = [
-    'home_page/static/css',
+    'main/static/css',
 ]
