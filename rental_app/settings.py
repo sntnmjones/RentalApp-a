@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+import logging
+
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -32,6 +34,8 @@ ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
+    "main.apps.MainConfig",
+    "property.apps.PropertyConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -165,12 +169,11 @@ LOGGING = {
 
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-import logging
 
 log = logging.getLogger(__name__)
 print(f"STATIC_ROOT: {STATIC_ROOT}")
 print(f"BASE_DIR: {BASE_DIR}")
 STATICFILES_DIRS = [
-    'main/static/css',
-    'property/static/css',
+    "main/static/css",
+    "property/static/css",
 ]

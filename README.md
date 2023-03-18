@@ -5,6 +5,11 @@ An app for landlords to review the renters that have resided in their properties
 
 ## Development
 ### Python Virtual Environment
+Create a virtual environment
+```bash
+python3 -m venv .venv
+```
+
 Activate venv
 ```bash
 source .venv/bin/activate
@@ -19,4 +24,9 @@ deactivate
 Start server
 ```bash
 docker-compose up
+```
+
+Debug
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.debug.yml up
 ```

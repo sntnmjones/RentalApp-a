@@ -10,3 +10,6 @@ __pycache__
 
 # Logs
 application.log*
+
+# VS Code
+.vscode/settings.json
