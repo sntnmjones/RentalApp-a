@@ -1,0 +1,46 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "docker-build",
+			"label": "docker-build",
+			"platform": "python",
+			"dockerBuild": {
+				"dockerfile": "${workspaceFolder}/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: debug",
+			"dependsOn": [
+				"install-debugpy",
+				"docker-build"
+			],
+			"python": {
+                "args": [
+					"/tmp/debugpy",
+					"--wait-for-client",
+					"--listen",
+					"0.0.0.0:5678",
+                    "-m",
+                    "uvicorn",
+                    "rental_app.asgi:application",
+                    "--host",
+                    "0.0.0.0",
+                    "--port",
+                    "8000"
+                ],
+                "file": "rental_app/asgi.py"
+				// "args": [
+				// 	"runserver",
+				// 	"0.0.0.0:8000",
+				// 	"--nothreading",
+				// 	"--noreload"
+				// ],
+				// "file": "manage.py"
+			}
+		}
+	]
+}
