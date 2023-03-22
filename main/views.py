@@ -1,5 +1,6 @@
 import logging
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from main.forms import GetPropertyAddressForm
@@ -7,16 +8,18 @@ from main.forms import GetPropertyAddressForm
 logger = logging.getLogger()
 
 def index(request):
-    logger.info(f"Hey from property_address")
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = GetPropertyAddressForm(request.POST)
+        if form.errors:
+            logger.error("Error creating GetPropertyAddressForm form: %s", form.errors.as_text)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
+            # return HttpResponseRedirect('/thanks/')
+            return HttpResponse(form.cleaned_data['property_address'])
 
     # if a GET (or any other method) we'll create a blank form
     # else:
