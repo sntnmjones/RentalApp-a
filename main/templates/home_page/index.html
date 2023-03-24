@@ -8,6 +8,11 @@
 {% include "main/templates/shared/header.html" %}
 {% include "main/templates/home_page/get_property_address_form.html" %}
 
-Hey from home_page
+{% if show_property_address %}
+    {% if property_found %}
+    {% else %}
+        {% include "main/templates/home_page/property_not_found.html" %}
+    {% endif %}
+{% endif %}
 <body>
 </html>
