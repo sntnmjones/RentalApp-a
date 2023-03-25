@@ -1,6 +1,5 @@
 <form action="" method="post">
     {% csrf_token %}
-    <label for="get_property_address">Property address: </label>
-    <input id="get_property_address" type="text" name="property_address">
+    {{ get_property_address_form }}
     <input type="submit" value="OK">
 </form>

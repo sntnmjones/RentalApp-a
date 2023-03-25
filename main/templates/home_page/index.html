@@ -6,7 +6,9 @@
 <link rel="stylesheet" href="{% static 'home_page.css' %}">
 
 {% include "main/templates/shared/header.html" %}
-{% include "main/templates/home_page/get_property_address_form.html" %}
+{% if get_property_address_form %}
+    {% include "main/templates/home_page/get_property_address_form.html" %}
+{% endif %}
 
 {% if show_property_address %}
     {% if property_found %}
