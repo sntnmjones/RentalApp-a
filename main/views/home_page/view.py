@@ -19,8 +19,7 @@ def index(request):
             request,
             template_name="main/templates/home_page/index.html",
             context={"show_property_address": False,
-                    "get_property_address_form": get_property_address_form },
-            status=200,
+                    "get_property_address_form": get_property_address_form }
         )
 
 
@@ -49,6 +48,5 @@ def _get_property_address(request):
                     "property_found": False,
                     "show_property_address": True,
                     "get_property_address_form": form
-                },
-                status=200,
+                }
             )
