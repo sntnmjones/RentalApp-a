@@ -14,10 +14,11 @@ class Address(models.Model):
 
 class Property(models.Model):
     address = models.OneToOneField(Address, on_delete=models.CASCADE)
-    reviews = models.ManyToManyField('Review')
+    property_review = models.ManyToManyField('Review')
+    rating = models.FloatField()
 
     def __str__(self):
-        return f"{self.address}"
+        return f"{self.address} - {self.rating}"
 
 class Review(models.Model):
     RATING_CHOICES = [
@@ -32,9 +33,12 @@ class Review(models.Model):
     reviewed_property = models.ForeignKey(Property, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(choices=RATING_CHOICES)
-    starting_rent = models.IntegerField(max_length=5, default=0)
-    ending_rent = models.IntegerField(max_length=5, default=0)
+    starting_rent = models.IntegerField(default=0)
+    ending_rent = models.IntegerField(default=0)
     comment = models.CharField(max_length=3000)
+    pub_date = models.DateTimeField('date published')
+    rented_duration = models.IntegerField()
 
     def __str__(self):
-        return f"{self.user} - {self.rating} - {self.comment}"
+        return (f"user: {self.user} - rating: {self.rating} - rented_duration: {self.rented_duration}"
+        f"{self.comment}")
