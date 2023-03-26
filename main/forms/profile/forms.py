@@ -1,10 +1,25 @@
+'''
+Profile forms
+'''
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 
 class NewUserForm(UserCreationForm):
-    def __init__(self, *args, **kwargs):
+    '''
+    Create a new user
+    '''
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        '''
+        Customize the required fields inherited from UserCreationForm
+        '''
+        model = User
+        fields = ["username", "email", "password1", "password2"]
+
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # Add a "show password" button next to the password field
         self.fields["password1"].widget.attrs["class"] = "password-field"
@@ -18,11 +33,24 @@ class NewUserForm(UserCreationForm):
         </div>
         """
 
-    email = forms.EmailField(required=True)
-
-    def save(self, commit=True):
+    def save(self, commit=True) -> User:
+        '''
+        Overrides the inherited save method to use the NewUserForm
+        '''
         user = super(NewUserForm, self).save(commit=False)
         user.email = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
+
+    def clean_email(self) -> str:
+        '''
+        Check if the email address currently exists. Called by is_valid()
+        This prevents more than one user per email
+        '''
+        email = self.cleaned_data.get("email")
+
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("You cannot create more than one user")
+
+        return email
