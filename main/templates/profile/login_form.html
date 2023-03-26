@@ -10,9 +10,6 @@
   </p>
 </div>
 
-{% if errors %} {% include "main/templates/shared/form_error.html" %} {% endif %}
-
-<script>
-  var label = document.querySelector('label[for="id_username"]');
-  label.innerHTML = "Email Address";
-</script>
+{% if errors %}
+{% include "main/templates/shared/form_error.html" %}
+{% endif %}
