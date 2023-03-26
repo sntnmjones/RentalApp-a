@@ -7,6 +7,7 @@ from main.forms.home_page.forms import GetPropertyAddressForm
 
 
 logger = logging.getLogger()
+index_template: str = "main/templates/home_page/index.html"
 
 
 def index(request):
@@ -17,9 +18,11 @@ def index(request):
         get_property_address_form = GetPropertyAddressForm()
         return render(
             request,
-            template_name="main/templates/home_page/index.html",
-            context={"show_property_address": False,
-                    "get_property_address_form": get_property_address_form }
+            template_name=index_template,
+            context={
+                "show_property_address": False,
+                "get_property_address_form": get_property_address_form,
+            },
         )
 
 
@@ -28,6 +31,11 @@ def _get_property_address(request):
     if form.errors:
         logger.error(
             "Error creating GetPropertyAddressForm form: %s", form.errors.as_text
+        )
+        return render(
+            request,
+            template_name=index_template,
+            context={"errors": form.errors, "get_property_address_form": form},
         )
     if form.is_valid():
         address = form.cleaned_data["property_address"]
@@ -42,11 +50,11 @@ def _get_property_address(request):
             logger.info("Address not found: [%s]", address)
             return render(
                 request,
-                template_name="main/templates/home_page/index.html",
+                template_name=index_template,
                 context={
                     "address": form.cleaned_data["property_address"],
                     "property_found": False,
                     "show_property_address": True,
-                    "get_property_address_form": form
-                }
+                    "get_property_address_form": form,
+                },
             )
