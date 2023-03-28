@@ -5,11 +5,10 @@
     {% csrf_token %} {{ login_form }}
     <button class="btn btn-primary" type="submit">Login</button>
   </form>
-  <p class="text-center">
+  <p>
     Don't have an account? <a href="/register">Create an account</a>.
   </p>
+  <p>
+    Forgot <a href="/username">username</a> or password
+  </p>
 </div>
-
-{% if errors %}
-{% include "main/templates/shared/form_error.html" %}
-{% endif %}

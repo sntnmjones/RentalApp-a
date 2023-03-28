@@ -7,5 +7,6 @@ urlpatterns = [
     path("register", profile.register, name="register"),
     path("login", profile.user_login, name="user_login"),
     path("logout", profile.user_logout, name="user_logout"),
-    path("profile", profile.user_profile, name="user_profile")
+    path("profile", profile.user_profile, name="user_profile"),
+    path("username", profile.forgot_username, name="forgot_username")
 ]

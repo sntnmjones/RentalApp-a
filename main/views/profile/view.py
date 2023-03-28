@@ -3,21 +3,53 @@ Profile views
 """
 import logging
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.mail import send_mail
 from main.forms.profile.forms import NewUserForm
+from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 logger = logging.getLogger()
 
 NEW_USER_FORM_TEMPLATE = "main/templates/profile/new_user_form.html"
 USER_PROFILE_TEMPLATE = "main/templates/profile/user_profile.html"
 LOGIN_FORM_TEMPLATE = "main/templates/profile/login_form.html"
+FORGOT_USERNAME_FORM_TEMPLATE = "main/templates/profile/forgot_username_form.html"
+
+
+def forgot_username(request) -> HttpResponse:
+    """
+    Forgot username workflow
+    Returns the user to the login page
+    """
+    message = ""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+            send_mail(
+                "RentalRanter Username",
+                f"Hey there! Your username is: {user.username}",
+                EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+                auth_user=EMAIL_HOST_USER,
+                auth_password=EMAIL_HOST_PASSWORD,
+            )
+        except User.DoesNotExist:
+            pass
+        message = "If there is a user with that email address, you'll receive an email shortly"
+        return render(request, FORGOT_USERNAME_FORM_TEMPLATE, {"message": message})
+    return render(request, FORGOT_USERNAME_FORM_TEMPLATE)
 
 
 def register(request) -> HttpResponse:
     """
+    /register
     Register a new user
+    Forwards the user to the registration page
     """
     logger.info(request.META)
     if request.method == "POST":
@@ -40,8 +72,9 @@ def register(request) -> HttpResponse:
     )
 
 
-def user_profile(request, context):
+def user_profile(request, context) -> HttpResponse:
     """
+    /profile
     Render user profile template
     """
     return render(
@@ -51,12 +84,15 @@ def user_profile(request, context):
     )
 
 
-def user_login(request):
-    '''
+def user_login(request) -> HttpResponse:
+    """
+    /login
     Show the user login template.
     Log the user in and redirect to the user profile page
-    '''
+    """
     if request.method == "POST":
+        forgot_username(request)
+
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
@@ -85,9 +121,10 @@ def user_login(request):
     )
 
 
-def user_logout(request):
-    '''
+def user_logout(request) -> HttpResponseRedirect:
+    """
+    /logout
     Log the user out and redirect back to home page
-    '''
+    """
     logout(request)
     return redirect("/")
