@@ -5,4 +5,13 @@
 
 <div>
   <h1 class="title-center">Rental Ranter</h1>
+
+  {% if user.is_authenticated %}
+  <form action="{% url 'user_logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+  {% else %}
+  <a href="{% url 'user_login' %}">Login</a>
+  {% endif %}
 </div>
