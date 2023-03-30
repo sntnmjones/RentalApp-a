@@ -5,9 +5,11 @@ import logging
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.mail import send_mail
+from django.urls import reverse_lazy
 from main.forms.profile.forms import NewUserForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
@@ -17,6 +19,13 @@ NEW_USER_FORM_TEMPLATE = "main/templates/profile/new_user_form.html"
 USER_PROFILE_TEMPLATE = "main/templates/profile/user_profile.html"
 LOGIN_FORM_TEMPLATE = "main/templates/profile/login_form.html"
 FORGOT_USERNAME_FORM_TEMPLATE = "main/templates/profile/forgot_username_form.html"
+FORGOT_PASSWORD_FORM_TEMPLATE = "main/templates/profile/forgot_password_form.html"
+PASSWORD_RESET_EMAIL_FORM_TEMPLATE = (
+    "main/templates/profile/password_reset_email_form.html"
+)
+PASSWORD_RESET_CONFIRM_FORM_TEMPLATE = (
+    "main/templates/profile/password_reset_confirm_form.html"
+)
 
 
 def forgot_username(request) -> HttpResponse:
@@ -43,6 +52,27 @@ def forgot_username(request) -> HttpResponse:
         message = "If there is a user with that email address, you'll receive an email shortly"
         return render(request, FORGOT_USERNAME_FORM_TEMPLATE, {"message": message})
     return render(request, FORGOT_USERNAME_FORM_TEMPLATE)
+
+
+def forgot_password(request) -> HttpResponse:
+    """
+    /password
+    """
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                subject_template_name="password_reset_subject.txt",
+                email_template_name="password_reset_email.html",
+                html_email_template_name="password_reset_email.html",
+                extra_email_context=None,
+            )
+            return redirect("login")
+    else:
+        form = PasswordResetForm()
+    return render(request, FORGOT_PASSWORD_FORM_TEMPLATE, {"form": form})
 
 
 def register(request) -> HttpResponse:
@@ -128,3 +158,13 @@ def user_logout(request) -> HttpResponseRedirect:
     """
     logout(request)
     return redirect("/")
+
+
+class CustomPasswordResetView(PasswordResetView):
+    email_template_name = PASSWORD_RESET_EMAIL_FORM_TEMPLATE
+    success_url = reverse_lazy("user_login")
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = PASSWORD_RESET_CONFIRM_FORM_TEMPLATE
+    success_url = reverse_lazy("user_login")
