@@ -1,5 +1,6 @@
+{% block content %}
 <form action="" method="post">
-    {% csrf_token %}
-    {{ get_property_address_form }}
-    <input type="submit" value="OK">
+  {% csrf_token %} {{ get_property_address_form }}
+  <input type="submit" value="OK" />
 </form>
+{% endblock %}

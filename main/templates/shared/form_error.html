@@ -1,3 +1,4 @@
+{% extends 'main/templates/shared/base.html' %} {% block content %}
 <ul class="errors">
 	<h2>Form Error</h2>
     {% for field, error_list in errors.items %}
@@ -6,3 +7,4 @@
 		{% endfor %}
     {% endfor %}
 </ul>
+{% endblock %}

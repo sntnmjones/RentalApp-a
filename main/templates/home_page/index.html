@@ -1,11 +1,9 @@
+{% extends 'main/templates/shared/base.html' %} {% block content %}
+
 {% load static %}
 
-<html>
-<body>
-<link rel="stylesheet" href="{% static 'base.css' %}">
 <link rel="stylesheet" href="{% static 'home_page.css' %}">
 
-{% include "main/templates/shared/header.html" %}
 {% if get_property_address_form %}
     {% include "main/templates/home_page/get_property_address_form.html" %}
 {% endif %}
@@ -16,5 +14,4 @@
         {% include "main/templates/home_page/property_not_found.html" %}
     {% endif %}
 {% endif %}
-<body>
-</html>
+{% endblock %}
