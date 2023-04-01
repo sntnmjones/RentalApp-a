@@ -3,12 +3,13 @@ Profile views
 """
 import logging
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from main.forms.profile.forms import NewUserForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
@@ -20,6 +21,7 @@ USER_PROFILE_TEMPLATE = "main/templates/profile/user_profile.html"
 LOGIN_FORM_TEMPLATE = "main/templates/profile/login_form.html"
 FORGOT_USERNAME_FORM_TEMPLATE = "main/templates/profile/forgot_username_form.html"
 FORGOT_PASSWORD_FORM_TEMPLATE = "main/templates/profile/forgot_password_form.html"
+FORGOT_USERNAME_EMAIL = "main/templates/profile/forgot_username_email.html"
 PASSWORD_RESET_EMAIL_FORM_TEMPLATE = (
     "main/templates/profile/password_reset_email_form.html"
 )
@@ -38,14 +40,23 @@ def forgot_username(request) -> HttpResponse:
         email = request.POST.get("email")
         try:
             user = User.objects.get(email=email)
+            domain = HttpRequest.get_host(request)
+            protocol = 'https' if request.is_secure() else 'http'
+
+            email_html = render_to_string(FORGOT_USERNAME_EMAIL, {
+                'username': user.username,
+                'domain': domain,
+                'protocol': protocol
+            })
             send_mail(
                 "RentalRanter Username",
-                f"Hey there! Your username is: {user.username}",
+                "",
                 EMAIL_HOST_USER,
                 [email],
                 fail_silently=False,
                 auth_user=EMAIL_HOST_USER,
                 auth_password=EMAIL_HOST_PASSWORD,
+                html_message=email_html
             )
         except User.DoesNotExist:
             pass
