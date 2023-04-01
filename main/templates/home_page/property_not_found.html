@@ -1,5 +1,6 @@
 {% block content %}
 <div>
-    Cannot find {{address}}
+    <p>Cannot find {{address}}.</p>
+    <a href="{% url 'create_review' street=street city=city state=state %}">Rant it!</a>
 </div>
 {% endblock %}

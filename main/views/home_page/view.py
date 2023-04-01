@@ -41,18 +41,27 @@ def _get_property_address(request):
         address = form.cleaned_data["property_address"]
         logger.info("Getting Address: [%s]", address)
 
-        # Find the address
+        # TODO: Find the address
         property_found = False
 
         if property_found:
-            None
+            # TODO: Go to property url
+            pass
         else:
             logger.info("Address not found: [%s]", address)
+            fields = address.split(', ')
+            fields = [f.replace(' ', '-').lower() for f in fields]
+            street = fields[0]
+            city = fields[1]
+            state = fields[2]
             return render(
                 request,
                 template_name=index_template,
                 context={
-                    "address": form.cleaned_data["property_address"],
+                    "address": address,
+                    "street": street,
+                    "city": city,
+                    "state": state,
                     "property_found": False,
                     "show_property_address": True,
                     "get_property_address_form": form,

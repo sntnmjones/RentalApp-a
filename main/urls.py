@@ -17,5 +17,5 @@ urlpatterns = [
         profile.CustomPasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    path("review/create", reviews.create_review, name="create_review")
+    path("review/create/<state>/<city>/<street>", reviews.create_review, name="create_review")
 ]

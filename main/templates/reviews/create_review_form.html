@@ -1,5 +1,10 @@
 {% extends 'main/templates/shared/base.html' %}
 
 {% block content %}
-Create review
+  <h1>Create a new review</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create review">
+  </form>
 {% endblock %}

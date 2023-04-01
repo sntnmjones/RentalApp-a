@@ -16,9 +16,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
-        <li class="nav-item ms-auto">
-          <a href="{% url 'create_review' %}">Rant!</a>
-        </li>
         {% if user.is_authenticated %}
         <form action="{% url 'user_logout' %}" method="post">
           {% csrf_token %}

@@ -1,8 +1,12 @@
+from datetime import date
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 
 
+###############################################################################
+# MODELS
+###############################################################################
 class Address(models.Model):
     street_number = models.CharField(max_length=10)
     street_name = models.CharField(max_length=100)
@@ -20,7 +24,6 @@ class Property(models.Model):
     def __str__(self):
         return f"{self.address}"
 
-
 class Review(models.Model):
     RATING_CHOICES = [
         (0, "0"),
@@ -32,7 +35,7 @@ class Review(models.Model):
     ]
 
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    title = models.CharField(default='Review', max_length=100)
+    title = models.CharField(default='', max_length=100)
     comment = models.CharField(max_length=3000)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(choices=RATING_CHOICES)
@@ -60,3 +63,4 @@ class Review(models.Model):
             f"user: {self.user} - rating: {self.rating}"
             f"{self.comment}"
         )
+    

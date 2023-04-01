@@ -80,7 +80,7 @@ def forgot_password(request) -> HttpResponse:
                 html_email_template_name="password_reset_email.html",
                 extra_email_context=None,
             )
-            return redirect("login")
+            return redirect("user_login")
     else:
         form = PasswordResetForm()
     return render(request, FORGOT_PASSWORD_FORM_TEMPLATE, {"form": form})
@@ -141,6 +141,8 @@ def user_login(request) -> HttpResponse:
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                if request.session['relay_state_url']:
+                    return redirect(request.session['relay_state_url'])
                 return user_profile(request, {"username": user.get_username})
             else:
                 return render(
