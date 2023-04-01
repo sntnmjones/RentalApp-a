@@ -49,7 +49,7 @@ def forgot_username(request) -> HttpResponse:
                 'protocol': protocol
             })
             send_mail(
-                "RentalRanter Username",
+                "Rentalranter Username",
                 "",
                 EMAIL_HOST_USER,
                 [email],
