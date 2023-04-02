@@ -2,6 +2,7 @@
 Profile views
 """
 import logging
+import common
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.contrib.auth import login, authenticate, logout
@@ -15,19 +16,6 @@ from main.forms.profile.forms import NewUserForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 logger = logging.getLogger()
-
-NEW_USER_FORM_TEMPLATE = "main/templates/profile/new_user_form.html"
-USER_PROFILE_TEMPLATE = "main/templates/profile/user_profile.html"
-LOGIN_FORM_TEMPLATE = "main/templates/profile/login_form.html"
-FORGOT_USERNAME_FORM_TEMPLATE = "main/templates/profile/forgot_username_form.html"
-FORGOT_PASSWORD_FORM_TEMPLATE = "main/templates/profile/forgot_password_form.html"
-FORGOT_USERNAME_EMAIL = "main/templates/profile/forgot_username_email.html"
-PASSWORD_RESET_EMAIL_FORM_TEMPLATE = (
-    "main/templates/profile/password_reset_email_form.html"
-)
-PASSWORD_RESET_CONFIRM_FORM_TEMPLATE = (
-    "main/templates/profile/password_reset_confirm_form.html"
-)
 
 
 def forgot_username(request) -> HttpResponse:
@@ -43,7 +31,7 @@ def forgot_username(request) -> HttpResponse:
             domain = HttpRequest.get_host(request)
             protocol = 'https' if request.is_secure() else 'http'
 
-            email_html = render_to_string(FORGOT_USERNAME_EMAIL, {
+            email_html = render_to_string(common.FORGOT_USERNAME_EMAIL, {
                 'username': user.username,
                 'domain': domain,
                 'protocol': protocol
@@ -61,8 +49,8 @@ def forgot_username(request) -> HttpResponse:
         except User.DoesNotExist:
             pass
         message = "If there is a user with that email address, you'll receive an email shortly"
-        return render(request, FORGOT_USERNAME_FORM_TEMPLATE, {"message": message})
-    return render(request, FORGOT_USERNAME_FORM_TEMPLATE)
+        return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE, {"message": message})
+    return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE)
 
 
 def forgot_password(request) -> HttpResponse:
@@ -83,7 +71,7 @@ def forgot_password(request) -> HttpResponse:
             return redirect("user_login")
     else:
         form = PasswordResetForm()
-    return render(request, FORGOT_PASSWORD_FORM_TEMPLATE, {"form": form})
+    return render(request, common.FORGOT_PASSWORD_FORM_TEMPLATE, {"form": form})
 
 
 def register(request) -> HttpResponse:
@@ -102,13 +90,13 @@ def register(request) -> HttpResponse:
         logger.warning("Could not register user. %s", form.errors.as_json)
         return render(
             request,
-            template_name=NEW_USER_FORM_TEMPLATE,
+            template_name=common.NEW_USER_FORM_TEMPLATE,
             context={"errors": form.errors, "register_form": form},
         )
     form = NewUserForm()
     return render(
         request,
-        template_name=NEW_USER_FORM_TEMPLATE,
+        template_name=common.NEW_USER_FORM_TEMPLATE,
         context={"register_form": form},
     )
 
@@ -120,7 +108,7 @@ def user_profile(request, context) -> HttpResponse:
     """
     return render(
         request,
-        template_name=USER_PROFILE_TEMPLATE,
+        template_name=common.USER_PROFILE_TEMPLATE,
         context=context,
     )
 
@@ -147,19 +135,19 @@ def user_login(request) -> HttpResponse:
             else:
                 return render(
                     request,
-                    template_name=LOGIN_FORM_TEMPLATE,
+                    template_name=common.LOGIN_FORM_TEMPLATE,
                     context={"login_form": form, "errors": form.errors},
                 )
         else:
             return render(
                 request,
-                template_name=LOGIN_FORM_TEMPLATE,
+                template_name=common.LOGIN_FORM_TEMPLATE,
                 context={"login_form": form, "errors": form.errors},
             )
     form = AuthenticationForm()
     return render(
         request=request,
-        template_name=LOGIN_FORM_TEMPLATE,
+        template_name=common.LOGIN_FORM_TEMPLATE,
         context={"login_form": form},
     )
 
@@ -174,10 +162,10 @@ def user_logout(request) -> HttpResponseRedirect:
 
 
 class CustomPasswordResetView(PasswordResetView):
-    email_template_name = PASSWORD_RESET_EMAIL_FORM_TEMPLATE
+    email_template_name = common.PASSWORD_RESET_EMAIL_FORM_TEMPLATE
     success_url = reverse_lazy("user_login")
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = PASSWORD_RESET_CONFIRM_FORM_TEMPLATE
+    template_name = common.PASSWORD_RESET_CONFIRM_FORM_TEMPLATE
     success_url = reverse_lazy("user_login")

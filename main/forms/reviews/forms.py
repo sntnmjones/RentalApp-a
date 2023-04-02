@@ -12,7 +12,6 @@ class ReviewForm(forms.ModelForm):
             'starting_rent_month_year',
             'ending_rent',
             'ending_rent_month_year',
-            'rented_duration_in_months'
         ]
         widgets = {
             'starting_rent_month_year': forms.DateInput(attrs={'type': 'date'}),

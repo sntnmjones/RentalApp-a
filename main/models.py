@@ -1,4 +1,6 @@
-from datetime import date
+"""
+Models
+"""
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
@@ -12,10 +14,9 @@ class Address(models.Model):
     street_name = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.street_number} {self.street_name}, {self.city}, {self.state} {self.zip_code}"
+        return f"Street: {self.street_number} {self.street_name}, {self.city}, {self.state}"
 
 
 class Property(models.Model):
@@ -48,7 +49,6 @@ class Review(models.Model):
     )
     ending_rent_month_year = models.DateField(blank=True, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
-    rented_duration_in_months = models.IntegerField(blank=True, null=True, validators=[MaxValueValidator(9999)])
 
     class Meta:
         unique_together = (
@@ -60,7 +60,7 @@ class Review(models.Model):
 
     def __str__(self):
         return (
-            f"user: {self.user} - rating: {self.rating}"
-            f"{self.comment}"
+            f"property: {self.property}"
+            f" - user: {self.user}"
         )
     
