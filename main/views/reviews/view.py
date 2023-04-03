@@ -46,3 +46,8 @@ def create_review(request, state, city, street) -> HttpResponse:
     current_url = request.build_absolute_uri()
     request.session['relay_state_url'] = current_url
     return redirect('user_login')
+
+def display_reviews(request, city, state, street_number, street_name):
+
+    context = {'addresses': addresses, 'reviews': reviews}
+    return render(request, 'address_detail.html', context)

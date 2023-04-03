@@ -4,6 +4,9 @@ Things to be used across the entire application
 ###############################################################################
 # TEMPLATES
 ###############################################################################
+# index
+INDEX_TEMPLATE = "main/templates/home_page/index.html"
+
 # profile
 NEW_USER_FORM_TEMPLATE = "main/templates/profile/new_user_form.html"
 USER_PROFILE_TEMPLATE = "main/templates/profile/user_profile.html"
@@ -19,3 +22,4 @@ PASSWORD_RESET_CONFIRM_FORM_TEMPLATE = (
 )
 # reviews
 CREATE_REVIEW_FORM = "main/templates/reviews/create_review_form.html"
+REVIEW_TEMPLATE = "main/templates/reviews/review.html"

@@ -1,0 +1,9 @@
+{% extends 'main/templates/shared/base.html' %} {% block content %}
+<h1>Reviews for {{ address }}</h1>
+{% for review in reviews %}
+    <h2>{{ review.title }}</h2>
+    <p>{{ review.comment }}</p>
+    <p>Rating: {{ review.rating }}</p>
+    <p>Published on: {{ review.pub_date }}</p>
+{% endfor %}
+{% endblock %}
