@@ -43,10 +43,10 @@ def index(request):
                     state=state,
                 )
 
-                reviews = get_reviews(property_pk=property_pk)
+                if property_pk:
+                    reviews = get_reviews(property_pk=property_pk)
+                    logger.info(reviews)
 
-                logger.info(reviews)
-                if reviews:
                     return render(
                     request,
                     template_name=REVIEW_TEMPLATE,

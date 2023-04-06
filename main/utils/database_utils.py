@@ -23,12 +23,19 @@ def get_address_pk(street_number, street_name, city, state):
 
 
 def get_property_pk(street_number, street_name, city, state):
-    return Property.objects.get(
+    if Property.objects.filter(
         address__city=city,
         address__state=state,
         address__street_number=street_number,
         address__street_name=street_name,
-    )
+    ).exists():
+        return Property.objects.get(
+            address__city=city,
+            address__state=state,
+            address__street_number=street_number,
+            address__street_name=street_name,
+        )
+    return None
 
 
 def get_reviews(property_pk):
