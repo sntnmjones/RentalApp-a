@@ -2,14 +2,16 @@
 Home page view
 """
 import logging
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from common import INDEX_TEMPLATE, REVIEW_TEMPLATE
 from main.utils.database_utils import *
-from main.utils.address_utils import split_street
+from main.utils.address_utils import get_address_dict
 from main.forms.home_page.forms import GetPropertyAddressForm
-from django.shortcuts import render
 
 
 logger = logging.getLogger()
+
 
 def index(request):
     if request.method == "POST":
@@ -27,34 +29,25 @@ def index(request):
                 )
             if form.is_valid():
                 address = form.cleaned_data["property_address"]
-                logger.info("Getting Address: [%s]", address)
 
-                fields = address.split(", ")
-                fields = [f.replace(" ", "-").lower() for f in fields]
-                street = fields[0]
-                city = fields[1]
-                state = fields[2]
-                street_number, street_name = split_street(street)
+                address_dict = get_address_dict(address)
 
-                property_pk = get_property_pk(
-                    street_number=street_number,
-                    street_name=street_name,
-                    city=city,
-                    state=state,
-                )
-
-                if property_pk:
-                    reviews = get_reviews(property_pk=property_pk)
-                    logger.info(reviews)
-
-                    return render(
-                    request,
-                    template_name=REVIEW_TEMPLATE,
-                    context={
-                        "address": address,
-                        "reviews": reviews,
-                    },
-                )
+                if property_pk_exists(
+                    address_dict["street_number"],
+                    address_dict["street_name"],
+                    address_dict["city"],
+                    address_dict["state"],
+                ):
+                    redirect_url = reverse(
+                        "list_reviews",
+                        kwargs={
+                            "city": address_dict["city"],
+                            "state": address_dict["state"],
+                            "street": address_dict["street"],
+                        },
+                    )
+                    request.session["address"] = address
+                    return redirect(redirect_url)
                 else:
                     logger.info("Address not found: [%s]", address)
                     return render(

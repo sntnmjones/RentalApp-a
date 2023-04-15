@@ -14,7 +14,6 @@ def get_address_pk(street_number, street_name, city, state):
         street_number=street_number,
         street_name=street_name,
     )
-    reviews = []
     if addresses == 0:
         return None
     elif len(addresses) > 1:
@@ -22,13 +21,8 @@ def get_address_pk(street_number, street_name, city, state):
     return addresses[0].pk
 
 
-def get_property_pk(street_number, street_name, city, state):
-    if Property.objects.filter(
-        address__city=city,
-        address__state=state,
-        address__street_number=street_number,
-        address__street_name=street_name,
-    ).exists():
+def get_property_pk(street_number, street_name, city, state) -> Property:
+    if property_pk_exists(street_number, street_name, city, state):
         return Property.objects.get(
             address__city=city,
             address__state=state,
@@ -36,6 +30,15 @@ def get_property_pk(street_number, street_name, city, state):
             address__street_name=street_name,
         )
     return None
+
+
+def property_pk_exists(street_number, street_name, city, state) -> bool:
+    return Property.objects.filter(
+        address__city=city,
+        address__state=state,
+        address__street_number=street_number,
+        address__street_name=street_name,
+    ).exists()
 
 
 def get_reviews(property_pk):

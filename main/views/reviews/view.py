@@ -2,15 +2,18 @@
 Reviews views
 """
 import logging
-import common
-from main.utils.address_utils import split_street
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import transaction
+import common
 from main.models import Address, Property
+from main.utils.address_utils import split_street
+from main.utils.database_utils import *
+from main.utils.address_utils import split_street
 from ...forms.reviews.forms import ReviewForm
 
 logger = logging.getLogger()
+
 
 def create_review(request, state, city, street) -> HttpResponse:
     """
@@ -18,7 +21,7 @@ def create_review(request, state, city, street) -> HttpResponse:
     Create a new review
     """
     if request.user.is_authenticated:
-        if request.method == 'POST':
+        if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
                 street_number, street_name = split_street(street)
@@ -26,7 +29,7 @@ def create_review(request, state, city, street) -> HttpResponse:
                     street_number=street_number,
                     street_name=street_name,
                     city=city,
-                    state=state
+                    state=state,
                 )
                 review = form.save(commit=False)
                 review.property = Property.objects.create(address=address)
@@ -38,16 +41,30 @@ def create_review(request, state, city, street) -> HttpResponse:
                     except Exception as e:
                         logger.error("Could not commit transaction: %s" % e)
                         transaction.rollback()
-                return redirect('index')
+                return redirect("index")
         else:
             form = ReviewForm()
-        return render(request, common.CREATE_REVIEW_FORM, {'form': form})
+        return render(request, common.CREATE_REVIEW_FORM, {"form": form})
 
     current_url = request.build_absolute_uri()
-    request.session['relay_state_url'] = current_url
-    return redirect('user_login')
+    request.session["relay_state_url"] = current_url
+    return redirect("user_login")
 
-def display_reviews(request, city, state, street_number, street_name):
 
-    context = {'addresses': addresses, 'reviews': reviews}
-    return render(request, 'address_detail.html', context)
+def list_reviews(request, state, city, street):
+    """
+    /review/list/<state>/<city>/<street>
+    List reviews
+    """
+    street_number, street_name = split_street(street)
+    property_pk = get_property_pk(street_number, street_name, city, state)
+    reviews = get_reviews(property_pk=property_pk)
+    address = request.session["address"]
+    return render(
+        request,
+        template_name=common.REVIEW_TEMPLATE,
+        context={
+            "address": address,
+            "reviews": reviews,
+        },
+    )
