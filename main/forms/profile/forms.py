@@ -51,6 +51,6 @@ class NewUserForm(UserCreationForm):
         email = self.cleaned_data.get("email")
 
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("You cannot create more than one user")
+            raise forms.ValidationError("There is already a user registered to this email address")
 
         return email

@@ -87,6 +87,7 @@ def register(request) -> HttpResponse:
             user = form.save()
             login(request, user)
             return redirect("/profile")
+        
         logger.warning("Could not register user. %s", form.errors.as_json)
         return render(
             request,
