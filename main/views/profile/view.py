@@ -2,7 +2,6 @@
 Profile views
 """
 import logging
-import common
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.contrib.auth import login, authenticate, logout
@@ -12,11 +11,11 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+import common
 from main.forms.profile.forms import NewUserForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 logger = logging.getLogger()
-
 
 def forgot_username(request) -> HttpResponse:
     """
@@ -29,13 +28,12 @@ def forgot_username(request) -> HttpResponse:
         try:
             user = User.objects.get(email=email)
             domain = HttpRequest.get_host(request)
-            protocol = 'https' if request.is_secure() else 'http'
+            protocol = "https" if request.is_secure() else "http"
 
-            email_html = render_to_string(common.FORGOT_USERNAME_EMAIL, {
-                'username': user.username,
-                'domain': domain,
-                'protocol': protocol
-            })
+            email_html = render_to_string(
+                common.FORGOT_USERNAME_EMAIL,
+                {"username": user.username, "domain": domain, "protocol": protocol},
+            )
             send_mail(
                 "Rentalranter Username",
                 "",
@@ -44,12 +42,14 @@ def forgot_username(request) -> HttpResponse:
                 fail_silently=False,
                 auth_user=EMAIL_HOST_USER,
                 auth_password=EMAIL_HOST_PASSWORD,
-                html_message=email_html
+                html_message=email_html,
             )
         except User.DoesNotExist:
             pass
         message = "If there is a user with that email address, you'll receive an email shortly"
-        return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE, {"message": message})
+        return render(
+            request, common.FORGOT_USERNAME_FORM_TEMPLATE, {"message": message}
+        )
     return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE)
 
 
@@ -86,8 +86,8 @@ def register(request) -> HttpResponse:
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("/profile")
-        
+            return user_profile(request, {"username": user.get_username})
+
         logger.warning("Could not register user. %s", form.errors.as_json)
         return render(
             request,
@@ -110,7 +110,7 @@ def user_profile(request, context) -> HttpResponse:
     return render(
         request,
         template_name=common.USER_PROFILE_TEMPLATE,
-        context=context,
+        context={"username": context["username"]},
     )
 
 
@@ -130,8 +130,8 @@ def user_login(request) -> HttpResponse:
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                if request.session['relay_state_url']:
-                    return redirect(request.session['relay_state_url'])
+                if request.session["relay_state_url"]:
+                    return redirect(request.session["relay_state_url"])
                 return user_profile(request, {"username": user.get_username})
             else:
                 return render(
