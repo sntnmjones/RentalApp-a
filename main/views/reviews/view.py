@@ -24,14 +24,18 @@ def create_review(request, street, city, state) -> HttpResponse:
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                address = Address.objects.create(
-                    street=street,
-                    city=city,
-                    state=state,
-                    full_address=request.session['address']
-                )
+                property = get_property_pk(street, city, state)
+                if property is None:
+                    address = Address.objects.create(
+                        street=street,
+                        city=city,
+                        state=state,
+                        full_address=request.session['address']
+                    )
+                    property = Property.objects.create(address=address)
+                    
                 review = form.save(commit=False)
-                review.property = Property.objects.create(address=address)
+                review.property = property
                 review.user = request.user
                 with transaction.atomic():
                     try:
