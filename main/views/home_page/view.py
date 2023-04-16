@@ -29,12 +29,12 @@ def index(request):
                 )
             if form.is_valid():
                 address = form.cleaned_data["property_address"]
+                request.session['address'] = address
 
                 address_dict = get_address_dict(address)
 
                 if property_pk_exists(
-                    address_dict["street_number"],
-                    address_dict["street_name"],
+                    address_dict["street"],
                     address_dict["city"],
                     address_dict["state"],
                 ):
@@ -55,9 +55,9 @@ def index(request):
                         template_name=INDEX_TEMPLATE,
                         context={
                             "address": address,
-                            "street": street,
-                            "city": city,
-                            "state": state,
+                            "street": address_dict["street"],
+                            "city": address_dict["city"],
+                            "state": address_dict["state"],
                             "property_found": False,
                             "show_property_address": True,
                             "get_property_address_form": form,

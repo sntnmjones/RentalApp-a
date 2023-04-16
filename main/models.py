@@ -10,13 +10,13 @@ from django.core.validators import MaxValueValidator
 # MODELS
 ###############################################################################
 class Address(models.Model):
-    street_number = models.CharField(max_length=10)
-    street_name = models.CharField(max_length=100)
+    street = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
+    full_address = models.CharField(max_length=300)
 
     def __str__(self):
-        return f"Street: {self.street_number} {self.street_name}, {self.city}, {self.state}"
+        return f"Address: {self.street}, {self.city}, {self.state}"
 
 
 class Property(models.Model):

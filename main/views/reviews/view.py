@@ -15,7 +15,7 @@ from ...forms.reviews.forms import ReviewForm
 logger = logging.getLogger()
 
 
-def create_review(request, state, city, street) -> HttpResponse:
+def create_review(request, street, city, state) -> HttpResponse:
     """
     /review/create/<state>/<city>/<street>
     Create a new review
@@ -24,12 +24,11 @@ def create_review(request, state, city, street) -> HttpResponse:
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                street_number, street_name = split_street(street)
                 address = Address.objects.create(
-                    street_number=street_number,
-                    street_name=street_name,
+                    street=street,
                     city=city,
                     state=state,
+                    full_address=request.session['address']
                 )
                 review = form.save(commit=False)
                 review.property = Property.objects.create(address=address)
@@ -51,13 +50,12 @@ def create_review(request, state, city, street) -> HttpResponse:
     return redirect("user_login")
 
 
-def list_reviews(request, state, city, street):
+def list_reviews(request, street, city, state):
     """
     /review/list/<state>/<city>/<street>
     List reviews
     """
-    street_number, street_name = split_street(street)
-    property_pk = get_property_pk(street_number, street_name, city, state)
+    property_pk = get_property_pk(street, city, state)
     reviews = get_reviews(property_pk=property_pk)
     address = request.session["address"]
     return render(
@@ -65,6 +63,9 @@ def list_reviews(request, state, city, street):
         template_name=common.REVIEW_TEMPLATE,
         context={
             "address": address,
+            "state": state,
+            "city": city,
+            "street": street,
             "reviews": reviews,
         },
     )

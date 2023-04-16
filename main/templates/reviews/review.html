@@ -1,5 +1,8 @@
 {% extends 'main/templates/shared/base.html' %} {% block content %}
 <h1>Reviews for {{ address }}</h1>
+
+<a href="{% url 'create_review' street=street city=city state=state %}">Add Review</a>
+
 {% for review in reviews %}
     <h2>{{ review.title }}</h2>
     <p>{{ review.comment }}</p>
