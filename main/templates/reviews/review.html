@@ -1,5 +1,6 @@
 {% extends 'main/templates/shared/base.html' %} {% block content %}
 <h1>Reviews for {{ address }}</h1>
+<p>Average Rating: {{ rating_average }}</p>
 
 <a href="{% url 'create_review' street=street city=city state=state %}">Add Review</a>
 

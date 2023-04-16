@@ -8,9 +8,8 @@ from django.http import HttpResponse
 from django.db import transaction
 import common
 from main.models import Address, Property
-from main.utils.address_utils import split_street
 from main.utils.database_utils import *
-from main.utils.address_utils import split_street
+from main.utils.review_utils import *
 from ...forms.reviews.forms import ReviewForm
 
 logger = logging.getLogger()
@@ -71,6 +70,7 @@ def list_reviews(request, street, city, state):
     property_pk = get_property_pk(street, city, state)
     reviews = get_reviews(property_pk=property_pk)
     address = request.session["address"]
+    rating_average = get_rating_average(reviews)
     return render(
         request,
         template_name=common.REVIEW_TEMPLATE,
@@ -80,5 +80,6 @@ def list_reviews(request, street, city, state):
             "city": city,
             "street": street,
             "reviews": reviews,
+            "rating_average": rating_average
         },
     )
