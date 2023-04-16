@@ -9,10 +9,10 @@
     <p>Comment: {{ review.comment }}</p>
     <p>Rating: {{ review.rating }}</p>
     {% if review.starting_rent %}
-    <p>Starting rent: {{ review.starting_rent}} {% if starting_rent_month_year %} on {{ starting_rent_month_year }} {% endif %}</p>
+    <p>Starting rent: {{ review.starting_rent}} {% if review.starting_rent_month_year %} on {{ review.starting_rent_month_year }} {% endif %}</p>
     {% endif %}
     {% if review.ending_rent %}
-    <p>Ending rent: {{ review.ending_rent}} {% if endinging_rent_month_year %} on {{ endinging_rent_month_year }} {% endif %}</p>
+    <p>Ending rent: {{ review.ending_rent}} {% if review.ending_rent_month_year %} on {{ review.ending_rent_month_year }} {% endif %}</p>
     {% endif %}
     <p>Published on: {{ review.pub_date }}</p>
 {% endfor %}

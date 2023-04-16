@@ -3,6 +3,7 @@ Reviews views
 """
 import logging
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse
 from django.db import transaction
 import common
@@ -44,7 +45,15 @@ def create_review(request, street, city, state) -> HttpResponse:
                     except Exception as e:
                         logger.error("Could not commit transaction: %s" % e)
                         transaction.rollback()
-                return redirect("index")
+                redirect_url = reverse(
+                    "list_reviews",
+                    kwargs={
+                        "city": city,
+                        "state": state,
+                        "street": street,
+                    },
+                )
+                return redirect(redirect_url)
         else:
             form = ReviewForm()
         return render(request, common.CREATE_REVIEW_FORM, {"form": form})
