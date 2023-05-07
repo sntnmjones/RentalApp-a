@@ -19,12 +19,6 @@ class Address(models.Model):
         return f"Address: {self.street}, {self.city}, {self.state}"
 
 
-class Property(models.Model):
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.address}"
-
 class Review(models.Model):
     RATING_CHOICES = [
         (0, "0"),
@@ -35,7 +29,7 @@ class Review(models.Model):
         (5, "5"),
     ]
 
-    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
     title = models.CharField(default='', max_length=100)
     comment = models.CharField(max_length=3000)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -52,7 +46,7 @@ class Review(models.Model):
 
     class Meta:
         unique_together = (
-            "property",
+            "address",
             "user",
             "starting_rent_month_year",
             "ending_rent_month_year",
@@ -60,7 +54,7 @@ class Review(models.Model):
 
     def __str__(self):
         return (
-            f"property: {self.property}"
+            f"address: {self.address}"
             f" - user: {self.user}"
         )
     

@@ -1,4 +1,4 @@
-from main.models import Address, Property, Review
+from main.models import Address, Review
 import logging
 
 logger = logging.getLogger()
@@ -20,23 +20,23 @@ def get_address_pk(street, city, state):
     return addresses[0].pk
 
 
-def get_property_pk(street, city, state) -> Property:
-    if property_pk_exists(street, city, state):
-        return Property.objects.get(
-            address__city=city,
-            address__state=state,
-            address__street=street,
+def get_address_pk(street, city, state) -> Address:
+    if address_pk_exists(street, city, state):
+        return Address.objects.get(
+            city=city,
+            state=state,
+            street=street,
         )
     return None
 
 
-def property_pk_exists(street, city, state) -> bool:
-    return Property.objects.filter(
-        address__city=city,
-        address__state=state,
-        address__street=street
+def address_pk_exists(street, city, state) -> bool:
+    return Address.objects.filter(
+        city=city,
+        state=state,
+        street=street
     ).exists()
 
 
-def get_reviews(property_pk):
-    return Review.objects.filter(property_id=property_pk)
+def get_reviews(address_pk):
+    return Review.objects.filter(address_id=address_pk)

@@ -1,6 +1,6 @@
 def get_rating_average(reviews) -> float:
     """
-    Calculate the average rating for a property
+    Calculate the average rating for a address
     """
     rating_sum = 0
     num_reviews = len(reviews)

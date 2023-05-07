@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from django.db import transaction
 import common
-from main.models import Address, Property
+from main.models import Address
 from main.utils.database_utils import *
 from main.utils.review_utils import *
 from ...forms.reviews.forms import ReviewForm
@@ -24,18 +24,17 @@ def create_review(request, street, city, state) -> HttpResponse:
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                property = get_property_pk(street, city, state)
-                if property is None:
+                address = get_address_pk(street, city, state)
+                if address is None:
                     address = Address.objects.create(
                         street=street,
                         city=city,
                         state=state,
                         full_address=request.session['address']
                     )
-                    property = Property.objects.create(address=address)
                     
                 review = form.save(commit=False)
-                review.property = property
+                review.address = address
                 review.user = request.user
                 with transaction.atomic():
                     try:
@@ -67,8 +66,8 @@ def list_reviews(request, street, city, state):
     /review/list/<state>/<city>/<street>
     List reviews
     """
-    property_pk = get_property_pk(street, city, state)
-    reviews = get_reviews(property_pk=property_pk)
+    address_pk = get_address_pk(street, city, state)
+    reviews = get_reviews(address_pk=address_pk)
     address = request.session["address"]
     rating_average = get_rating_average(reviews)
     return render(

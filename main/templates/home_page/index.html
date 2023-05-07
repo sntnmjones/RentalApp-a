@@ -4,14 +4,14 @@
 
 <link rel="stylesheet" href="{% static 'home_page.css' %}">
 
-{% if get_property_address_form %}
-    {% include "main/templates/home_page/get_property_address_form.html" %}
+{% if get_address_form %}
+    {% include "main/templates/home_page/get_address_form.html" %}
 {% endif %}
 
-{% if show_property_address %}
-    {% if property_found %}
+{% if show_address %}
+    {% if address_found %}
     {% else %}
-        {% include "main/templates/home_page/property_not_found.html" %}
+        {% include "main/templates/home_page/address_not_found.html" %}
     {% endif %}
 {% endif %}
 {% endblock %}

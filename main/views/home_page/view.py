@@ -7,7 +7,7 @@ from django.urls import reverse
 from common import INDEX_TEMPLATE, REVIEW_TEMPLATE
 from main.utils.database_utils import *
 from main.utils.address_utils import get_address_dict
-from main.forms.home_page.forms import GetPropertyAddressForm
+from main.forms.home_page.forms import GetAddressForm
 
 
 logger = logging.getLogger()
@@ -15,25 +15,25 @@ logger = logging.getLogger()
 
 def index(request):
     if request.method == "POST":
-        if request.POST.get("property_address"):
-            form = GetPropertyAddressForm(request.POST)
+        if request.POST.get("address"):
+            form = GetAddressForm(request.POST)
             if form.errors:
                 logger.error(
-                    "Error creating GetPropertyAddressForm form: %s",
+                    "Error creating GetaddressAddressForm form: %s",
                     form.errors.as_text,
                 )
                 return render(
                     request,
                     template_name=INDEX_TEMPLATE,
-                    context={"errors": form.errors, "get_property_address_form": form},
+                    context={"errors": form.errors, "get_address_form": form},
                 )
             if form.is_valid():
-                address = form.cleaned_data["property_address"]
+                address = form.cleaned_data["address"]
                 request.session['address'] = address
 
                 address_dict = get_address_dict(address)
 
-                if property_pk_exists(
+                if address_pk_exists(
                     address_dict["street"],
                     address_dict["city"],
                     address_dict["state"],
@@ -58,18 +58,18 @@ def index(request):
                             "street": address_dict["street"],
                             "city": address_dict["city"],
                             "state": address_dict["state"],
-                            "property_found": False,
-                            "show_property_address": True,
-                            "get_property_address_form": form,
+                            "address_found": False,
+                            "show_address": True,
+                            "get_address_form": form,
                         },
                     )
     else:
-        get_property_address_form = GetPropertyAddressForm()
+        get_address_form = GetAddressForm()
         return render(
             request,
             template_name=INDEX_TEMPLATE,
             context={
-                "show_property_address": False,
-                "get_property_address_form": get_property_address_form,
+                "show_address": False,
+                "get_address_form": get_address_form,
             },
         )
