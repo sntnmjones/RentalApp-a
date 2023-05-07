@@ -87,9 +87,9 @@ def register(request) -> HttpResponse:
             user = form.save()
             login(request, user)
             # If registering, go back from whence you came
-            if request.session['relay_state_url']:
+            if 'relay_state_url' in request.session:
                 redirect_url = request.session['relay_state_url']
-                request.session['relay_state_url'] = None
+                request.session.pop('relay_state_url', None)
                 return redirect(redirect_url)
 
             return user_profile(request, {"username": user.get_username})
@@ -136,7 +136,7 @@ def user_login(request) -> HttpResponse:
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                if request.session["relay_state_url"]:
+                if 'relay_state_url' in request.session:
                     return redirect(request.session["relay_state_url"])
                 return user_profile(request, {"username": user.get_username})
             else:

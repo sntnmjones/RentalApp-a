@@ -2,6 +2,13 @@
 <h1>Reviews for {{ address }}</h1>
 <p>Average Rating: {{ rating_average }}</p>
 
+{% if errors %}
+    Errors:
+    {% for error in errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+{% endif %}
+
 <a href="{% url 'create_review' street=street city=city state=state %}">Add Review</a>
 
 {% for review in reviews %}

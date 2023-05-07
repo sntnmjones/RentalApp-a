@@ -10,6 +10,7 @@ import common
 from main.models import Address
 from main.utils.database_utils import *
 from main.utils.review_utils import *
+from main.utils.common_utils import *
 from ...forms.reviews.forms import ReviewForm
 
 logger = logging.getLogger()
@@ -53,8 +54,20 @@ def create_review(request, street, city, state) -> HttpResponse:
                 )
                 return redirect(redirect_url)
         else:
+            if user_reviewed_address(street, city, state, request.user):
+                add_error_to_session_cookie('User has already reviewed address', request)
+                redirect_url = reverse(
+                    "list_reviews",
+                    kwargs={
+                        "city": city,
+                        "state": state,
+                        "street": street,
+                    },
+                )
+                return redirect(redirect_url)
             form = ReviewForm()
-        return render(request, common.CREATE_REVIEW_FORM, {"form": form})
+            return render(request, common.CREATE_REVIEW_FORM, {"form": form})
+            
 
     current_url = request.build_absolute_uri()
     request.session["relay_state_url"] = current_url
@@ -70,6 +83,11 @@ def list_reviews(request, street, city, state):
     reviews = get_reviews(address_pk=address_pk)
     address = request.session["address"]
     rating_average = get_rating_average(reviews)
+    errors = []
+    if 'errors' in request.session:
+        errors.append(request.session['errors'])
+        request.session.pop('errors', None)
+
     return render(
         request,
         template_name=common.REVIEW_TEMPLATE,
@@ -79,6 +97,7 @@ def list_reviews(request, street, city, state):
             "city": city,
             "street": street,
             "reviews": reviews,
-            "rating_average": rating_average
+            "rating_average": rating_average,
+            "errors": errors
         },
     )

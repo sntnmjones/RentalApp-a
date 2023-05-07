@@ -40,3 +40,13 @@ def address_pk_exists(street, city, state) -> bool:
 
 def get_reviews(address_pk):
     return Review.objects.filter(address_id=address_pk)
+
+def user_reviewed_address(street, city, state, user) -> bool:
+    if address_pk_exists(street, city, state):
+        address_pk = get_address_pk(street, city, state)
+        reviews = get_reviews(address_pk)
+        for review in reviews:
+            if review.user == user:
+                return True
+
+    return False
