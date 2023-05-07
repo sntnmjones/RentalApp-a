@@ -86,6 +86,12 @@ def register(request) -> HttpResponse:
         if form.is_valid():
             user = form.save()
             login(request, user)
+            # If registering, go back from whence you came
+            if request.session['relay_state_url']:
+                redirect_url = request.session['relay_state_url']
+                request.session['relay_state_url'] = None
+                return redirect(redirect_url)
+
             return user_profile(request, {"username": user.get_username})
 
         logger.warning("Could not register user. %s", form.errors.as_json)
