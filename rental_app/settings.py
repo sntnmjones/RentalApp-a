@@ -173,19 +173,5 @@ LOGGING = {
 }
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-# Examples from "docker-compose up":
-# print(f'STATIC_ROOT: {STATIC_ROOT}')
-# print(f'BASE_DIR: {BASE_DIR}')
-# rental_app  | BASE_DIR: /rental_app
-# rental_app  | STATIC_ROOT: /rental_app/static
-
-STATIC_URL = "/staticfiles/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-log = logging.getLogger(__name__)
-print(f"STATIC_ROOT: {STATIC_ROOT}")
-print(f"BASE_DIR: {BASE_DIR}")
-STATICFILES_DIRS = [
-    "main/static/css"
-]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "main/static")
