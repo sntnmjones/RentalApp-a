@@ -2,6 +2,7 @@
 Profile views
 """
 import logging
+from enum import Enum
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.contrib.auth import login, authenticate, logout
@@ -12,67 +13,79 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 import common
-from main.forms.profile.forms import NewUserForm
+from main.forms.profile.forms import NewUserForm, ResetPasswordForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 logger = logging.getLogger()
 
+class Forgot(Enum):
+    PASSWORD = 1
+    USERNAME = 2
+
 def forgot_username(request) -> HttpResponse:
     """
+    /forgot-username
     Forgot username workflow
     Returns the user to the login page
     """
-    message = ""
     if request.method == "POST":
-        email = request.POST.get("email")
-        try:
-            user = User.objects.get(email=email)
-            domain = HttpRequest.get_host(request)
-            protocol = "https" if request.is_secure() else "http"
-
-            email_html = render_to_string(
-                common.FORGOT_USERNAME_EMAIL,
-                {"username": user.username, "domain": domain, "protocol": protocol},
-            )
-            send_mail(
-                "Rentalranter Username",
-                "",
-                EMAIL_HOST_USER,
-                [email],
-                fail_silently=False,
-                auth_user=EMAIL_HOST_USER,
-                auth_password=EMAIL_HOST_PASSWORD,
-                html_message=email_html,
-            )
-        except User.DoesNotExist:
-            pass
-        message = "If there is a user with that email address, you'll receive an email shortly"
+        _send_forgot_email(request, Forgot.USERNAME)
         return render(
-            request, common.FORGOT_USERNAME_FORM_TEMPLATE, {"message": message}
+            request, common.FORGOT_USERNAME_FORM_TEMPLATE, {
+                "message": "If there is a user with that email address, you'll receive an email shortly"
+}
         )
     return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE)
 
 
-def forgot_password(request) -> HttpResponse:
+def password_reset(request) -> HttpResponse:
     """
-    /password
+    /password-reset
     """
     if request.method == "POST":
-        form = PasswordResetForm(request.POST)
+        form = ResetPasswordForm(request.POST)
         if form.is_valid():
             form.save(
                 request=request,
                 use_https=request.is_secure(),
-                subject_template_name="password_reset_subject.txt",
-                email_template_name="password_reset_email.html",
-                html_email_template_name="password_reset_email.html",
+                subject_template_name=common.PASSWORD_RESET_EMAIL_SUBJECT_FILE,
+                email_template_name=common.PASSWORD_RESET_EMAIL_FORM_TEMPLATE,
+                html_email_template_name=common.PASSWORD_RESET_EMAIL_FORM_TEMPLATE,
                 extra_email_context=None,
             )
             return redirect("user_login")
     else:
-        form = PasswordResetForm()
+        form = ResetPasswordForm()
     return render(request, common.FORGOT_PASSWORD_FORM_TEMPLATE, {"form": form})
 
+
+def _send_forgot_email(request, forgot: Forgot):
+    email = request.POST.get("email")
+    try:
+        user = User.objects.get(email=email)
+        domain = HttpRequest.get_host(request)
+        protocol = "https" if request.is_secure() else "http"
+        if forgot == Forgot.USERNAME:
+            _send_username_email(email, user, domain, protocol)
+    except User.DoesNotExist:
+        pass
+
+
+def _send_username_email(email, user, domain, protocol):
+    email_html = render_to_string(
+        common.FORGOT_USERNAME_EMAIL,
+        {"username": user.username, "domain": domain, "protocol": protocol},
+    )
+    send_mail(
+        "Rentalranter Username",
+        "",
+        EMAIL_HOST_USER,
+        [email],
+        fail_silently=False,
+        auth_user=EMAIL_HOST_USER,
+        auth_password=EMAIL_HOST_PASSWORD,
+        html_message=email_html,
+    )
 
 def register(request) -> HttpResponse:
     """
@@ -166,11 +179,6 @@ def user_logout(request) -> HttpResponseRedirect:
     """
     logout(request)
     return redirect("/")
-
-
-class CustomPasswordResetView(PasswordResetView):
-    email_template_name = common.PASSWORD_RESET_EMAIL_FORM_TEMPLATE
-    success_url = reverse_lazy("user_login")
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):

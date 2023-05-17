@@ -20,6 +20,9 @@ PASSWORD_RESET_EMAIL_FORM_TEMPLATE = (
 PASSWORD_RESET_CONFIRM_FORM_TEMPLATE = (
     "main/templates/profile/password_reset_confirm_form.html"
 )
+PASSWORD_RESET_EMAIL_SUBJECT_FILE = "main/templates/profile/password_reset_email_subject.txt"
+PASSWORD_RESET_EMAIL_FORM_TEMPLATE = "main/templates/profile/password_reset_email_form.html"
+
 # reviews
 CREATE_REVIEW_FORM = "main/templates/reviews/create_review_form.html"
 REVIEW_TEMPLATE = "main/templates/reviews/review.html"

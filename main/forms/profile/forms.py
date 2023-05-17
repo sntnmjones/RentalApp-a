@@ -2,7 +2,7 @@
 Profile forms
 '''
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
 
 
@@ -54,3 +54,29 @@ class NewUserForm(UserCreationForm):
             raise forms.ValidationError("There is already a user registered to this email address")
 
         return email
+
+class ResetPasswordForm(PasswordResetForm):
+    '''
+    Password reset form
+    '''
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        '''
+        Customize the required fields inherited from PasswordResetForm
+        '''
+        model = User
+        fields = ["username", "email"]
+
+
+    def clean_email(self) -> str:
+        '''
+        Check if the email address currently exists. 
+        '''
+        email = self.cleaned_data.get("email")
+
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError("There is already a user registered to this email address")
+
+        return email
+    
