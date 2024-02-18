@@ -104,7 +104,7 @@ def register(request) -> HttpResponse:
                 redirect_url = request.session['relay_state_url']
                 request.session.pop('relay_state_url', None)
                 return redirect(redirect_url)
-            request.session[common.RequestVariable.USERNAME] = user.get_username
+            request.session[common.USERNAME] = user.get_username
             return user_profile(request)
 
         logger.warning("Could not register user. %s", form.errors.as_json)
@@ -126,11 +126,14 @@ def user_profile(request) -> HttpResponse:
     /profile
     Render user profile template
     """
-    username = request.POST.get('username')
+    context = {"username": str(request.POST.get(common.USERNAME))}
+    if 'login' in request.path:
+        # Remove username from session to avoid 'Object of type method is not JSON serializable' error
+        del request.session[common.USERNAME]
     return render(
         request,
         template_name=common.USER_PROFILE_TEMPLATE,
-        context={"username": username},
+        context=context
     )
 
 
@@ -152,7 +155,7 @@ def user_login(request) -> HttpResponse:
                 login(request, user)
                 if 'relay_state_url' in request.session:
                     return redirect(request.session["relay_state_url"])
-                request.session[common.RequestVariable.USERNAME] = user.get_username
+                request.session[common.USERNAME] = user.get_username
                 return user_profile(request)
             else:
                 return render(
