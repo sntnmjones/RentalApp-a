@@ -23,9 +23,13 @@
             <button type="submit">Logout</button>
           </li>
         </form>
-        <li class="nav-item ms-auto">
-          <a href="{% url 'user_profile' %}">{{user}}</a>
-        </li>
+        <form action="{% url 'user_profile' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="username" value="{{ user }}">
+          <li class="nav-item ms-auto">
+            <button type="submit">{{user}}</button>
+          </li>
+        </form>
         {% else %}
         <li class="nav-item ms-auto">
           <a href="{% url 'user_login' %}">Login</a>

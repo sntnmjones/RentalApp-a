@@ -104,8 +104,8 @@ def register(request) -> HttpResponse:
                 redirect_url = request.session['relay_state_url']
                 request.session.pop('relay_state_url', None)
                 return redirect(redirect_url)
-
-            return user_profile(request, {"username": user.get_username})
+            request.session[common.RequestVariable.USERNAME] = user.get_username
+            return user_profile(request)
 
         logger.warning("Could not register user. %s", form.errors.as_json)
         return render(
@@ -121,15 +121,16 @@ def register(request) -> HttpResponse:
     )
 
 
-def user_profile(request, context) -> HttpResponse:
+def user_profile(request) -> HttpResponse:
     """
     /profile
     Render user profile template
     """
+    username = request.POST.get('username')
     return render(
         request,
         template_name=common.USER_PROFILE_TEMPLATE,
-        context={"username": context["username"]},
+        context={"username": username},
     )
 
 
@@ -151,7 +152,8 @@ def user_login(request) -> HttpResponse:
                 login(request, user)
                 if 'relay_state_url' in request.session:
                     return redirect(request.session["relay_state_url"])
-                return user_profile(request, {"username": user.get_username})
+                request.session[common.RequestVariable.USERNAME] = user.get_username
+                return user_profile(request)
             else:
                 return render(
                     request,

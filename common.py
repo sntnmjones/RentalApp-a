@@ -1,6 +1,12 @@
 """
 Things to be used across the entire application
 """
+
+from enum import Enum
+class RequestVariable(Enum):
+    USERNAME = 'username'
+
+
 ###############################################################################
 # TEMPLATES
 ###############################################################################
