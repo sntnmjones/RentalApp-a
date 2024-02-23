@@ -1,6 +1,24 @@
 {% block content %}
-<form action="" method="post">
-  {% csrf_token %} {{ get_address_form }}
-  <input type="submit" value="OK" />
+<head>
+  <link href="https://js.radar.com/v4.1.6/radar.css" rel="stylesheet">
+  <script src="https://js.radar.com/v4.1.6/radar.min.js"></script>
+</head>    
+
+<form id="autocomplete-form" action="" method="post">
+  {% csrf_token %}
+  <input type="text" id="autocomplete" name="address">
 </form>
+
+<script type="text/javascript">
+  Radar.initialize('prj_test_pk_c6048f46bd4f54694cbf73f6ad6882fdf6f163dd');
+  
+  Radar.ui.autocomplete({
+    container: 'autocomplete',
+    width: '600px',
+    onSelection: (address) => {
+      document.getElementById('autocomplete-form').submit();
+    },
+  });
+
+</script>
 {% endblock %}
