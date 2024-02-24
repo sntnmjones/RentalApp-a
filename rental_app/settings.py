@@ -78,7 +78,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "rental_app.wsgi.application"
 
 
-# Database
+############################################################
+# DATABASE
+############################################################
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
 DATABASES = {
@@ -129,6 +131,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+############################################################
+# CACHING
+############################################################
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    }
+}
 
 ############################################################
 # EMAIL CONFIGURATION
