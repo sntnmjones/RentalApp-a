@@ -39,10 +39,11 @@ def get_address_dict(address: str) -> dict[str, str]:
     address_fields = address.split(", ")
     address_fields = [f.replace(" ", "-").lower() for f in address_fields]
     street_number, street_name = split_street(address_fields[0])
+    state = address_fields[2][:2]
     return {
         "street": address_fields[0],
         "city": address_fields[1],
-        "state": address_fields[2],
+        "state": state,
         "street_number": street_number,
         "street_name": street_name,
     }
