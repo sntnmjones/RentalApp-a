@@ -20,14 +20,14 @@
         <form action="{% url 'user_logout' %}" method="post">
           {% csrf_token %}
           <li class="nav-item ms-auto">
-            <button type="submit">Logout</button>
+            <button class="btn btn-primary" type="submit">Logout</button>
           </li>
         </form>
         <form action="{% url 'user_profile' %}" method="post">
           {% csrf_token %}
           <input type="hidden" name="username" value="{{ user }}">
           <li class="nav-item ms-auto">
-            <button type="submit">{{user}}</button>
+            <button class="btn btn-primary" type="submit">{{user}}</button>
           </li>
         </form>
         {% else %}

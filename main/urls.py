@@ -2,6 +2,8 @@ from django.urls import path
 from main.views.home_page import view as home_page
 from main.views.profile import view as profile
 from main.views.reviews import view as reviews
+from django.contrib.auth import views as auth_views
+import common
 
 
 urlpatterns = [
@@ -17,6 +19,11 @@ urlpatterns = [
         profile.CustomPasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
+    path(
+        'password-reset-complete/',
+        auth_views.PasswordResetCompleteView.as_view(),
+        name='password_reset_complete'
+        ),
     path("review/create/<state>/<city>/<street>", reviews.create_review, name="create_review"),
     path("review/list/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews")
 ]
