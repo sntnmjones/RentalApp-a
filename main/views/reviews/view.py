@@ -12,30 +12,34 @@ from main.utils.database_utils import *
 from main.utils.review_utils import *
 from main.utils.common_utils import *
 from ...forms.reviews.forms import ReviewForm
+from main.utils.address_utils import get_address_dict
 
 logger = logging.getLogger()
 
 
-def create_review(request, street, city, state) -> HttpResponse:
+def create_review(request, street, city, state, country) -> HttpResponse:
     """
-    /review/create/<state>/<city>/<street>
+    /review/create/<country>/<state>/<city>/<street>
     Create a new review
     """
     if request.user.is_authenticated:
+        full_address = request.session['address']
+        address_dict = get_address_dict(full_address)
+
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                address = get_address_pk(street, city, state)
-                if address is None:
-                    address = Address.objects.create(
+                address_pk = get_address_pk(full_address)
+                if address_pk is None:
+                    address_pk = Address.objects.create(
                         street=street,
                         city=city,
                         state=state,
-                        full_address=request.session['address']
+                        full_address=full_address
                     )
                     
                 review = form.save(commit=False)
-                review.address = address
+                review.address = address_pk
                 review.user = request.user
                 with transaction.atomic():
                     try:
@@ -44,17 +48,19 @@ def create_review(request, street, city, state) -> HttpResponse:
                     except Exception as e:
                         logger.error("Could not commit transaction: %s" % e)
                         transaction.rollback()
+
                 redirect_url = reverse(
                     "list_reviews",
                     kwargs={
                         "city": city,
                         "state": state,
                         "street": street,
+                        "country": address_dict["country"]
                     },
                 )
                 return redirect(redirect_url)
         else:
-            if user_reviewed_address(street, city, state, request.user):
+            if user_reviewed_address(full_address, request.user):
                 add_error_to_session_cookie('User has already reviewed address', request)
                 redirect_url = reverse(
                     "list_reviews",
@@ -62,6 +68,7 @@ def create_review(request, street, city, state) -> HttpResponse:
                         "city": city,
                         "state": state,
                         "street": street,
+                        "country": address_dict["country"]
                     },
                 )
                 return redirect(redirect_url)
@@ -74,14 +81,15 @@ def create_review(request, street, city, state) -> HttpResponse:
     return redirect("user_login")
 
 
-def list_reviews(request, street, city, state):
+def list_reviews(request, street, city, state, country):
     """
-    /review/list/<state>/<city>/<street>
+    /review/list/<country>/<state>/<city>/<street>
     List reviews
     """
-    address_pk = get_address_pk(street, city, state)
+    full_address = request.session['address']
+    address_dict = get_address_dict(full_address)
+    address_pk = get_address_pk(full_address)
     reviews = get_reviews(address_pk=address_pk)
-    address = request.session["address"]
     rating_average = get_rating_average(reviews)
     errors = []
     if 'errors' in request.session:
@@ -92,7 +100,8 @@ def list_reviews(request, street, city, state):
         request,
         template_name=common.REVIEW_TEMPLATE,
         context={
-            "address": address,
+            "address": full_address,
+            "country": country,
             "state": state,
             "city": city,
             "street": street,

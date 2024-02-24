@@ -9,7 +9,7 @@
     {% endfor %}
 {% endif %}
 
-<a href="{% url 'create_review' street=street city=city state=state %}">Add Review</a>
+<a href="{% url 'create_review' street=street city=city state=state country=country %}">Add Review</a>
 
 {% for review in reviews %}
     <h2>{{ review.title }}</h2>

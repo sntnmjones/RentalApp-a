@@ -28,36 +28,34 @@ def index(request):
                     context={"errors": form.errors, "get_address_form": form},
                 )
             if form.is_valid():
-                address = form.cleaned_data["address"]
-                request.session['address'] = address
+                full_address = form.cleaned_data["address"]
+                request.session['address'] = full_address
 
-                address_dict = get_address_dict(address)
+                address_dict = get_address_dict(full_address)
 
-                if address_pk_exists(
-                    address_dict["street"],
-                    address_dict["city"],
-                    address_dict["state"],
-                ):
+                if address_pk_exists(full_address):
                     redirect_url = reverse(
                         "list_reviews",
                         kwargs={
+                            "street": address_dict["street"],
                             "city": address_dict["city"],
                             "state": address_dict["state"],
-                            "street": address_dict["street"],
+                            "country": address_dict["country"]
                         },
                     )
-                    request.session["address"] = address
+                    request.session["address"] = full_address
                     return redirect(redirect_url)
                 else:
-                    logger.info("Address not found: [%s]", address)
+                    logger.info("Address not found: [%s]", full_address)
                     return render(
                         request,
                         template_name=INDEX_TEMPLATE,
                         context={
-                            "address": address,
+                            "address": full_address,
                             "street": address_dict["street"],
                             "city": address_dict["city"],
                             "state": address_dict["state"],
+                            "country": address_dict["country"],
                             "address_found": False,
                             "show_address": True,
                             "get_address_form": form,

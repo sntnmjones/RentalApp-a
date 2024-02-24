@@ -24,6 +24,6 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name='password_reset_complete'
         ),
-    path("review/create/<state>/<city>/<street>", reviews.create_review, name="create_review"),
-    path("review/list/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews")
+    path("review/create/<country>/<state>/<city>/<street>", reviews.create_review, name="create_review"),
+    path("review/list/<country>/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews")
 ]
