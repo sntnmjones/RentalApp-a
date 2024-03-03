@@ -58,17 +58,19 @@
     // State dropdown
     $(document).ready(function() {
         $('#select-state').change(function() {
+            var selectedCountry = $('#select-country').val();
             var selectedState = $(this).val();
             $.ajax({
                 url: '{% url "get_cities_list" %}',
                 type: 'GET',
                 data: {
+                    country: selectedCountry,
                     state: selectedState
                 },
                 success: function(data) {
                     var citySelect = $('#select-city');
                     citySelect.empty();
-                    stateSelect.append($('<option>').val('').text('Select State'));
+                    citySelect.append($('<option>').val('').text('Select City'));
                     $.each(data, function(index, city) {
                         citySelect.append($('<option>').val(city).text(city));
                     });

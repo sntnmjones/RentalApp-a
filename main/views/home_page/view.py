@@ -47,7 +47,7 @@ def get_cities_list(request):
     """
     Get a list of cities for a given state
     """
-    cities = get_cities(request.GET.get('state'))
+    cities = get_cities(request.GET.get('state'), request.GET.get('country'))
     return _get_json_response(list(cities))
 
 
