@@ -1,0 +1,103 @@
+{% block content %}
+<p>List reviews for a city</p>
+<form id="dropdown-form" method="get">
+    <label for="select-country">Country:</label>
+    <select id="select-country" name="country">
+        <option value="" selected disabled>Select Country</option>
+        {% for country in countries %}
+            <option value="{{ country }}">{{ country }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="select-state">State:</label>
+    <select id="select-state" name="state">
+        <option value="" selected disabled>Select State</option>
+        {% for state in states %}
+            <option value="{{ state }}">{{ state }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="select-city">City:</label>
+    <select id="select-city" name="city">
+        <option value="" selected disabled>Select City</option>
+        {% for city in cities %}
+            <option value="{{ city }}">{{ city }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Country dropdown
+    $(document).ready(function() {
+        $('#select-country').change(function() {
+            var selectedCountry = $(this).val();
+            $.ajax({
+                url: '{% url "get_states_list" %}',
+                type: 'GET',
+                data: {
+                    country: selectedCountry
+                },
+                success: function(data) {
+                    var stateSelect = $('#select-state');
+                    stateSelect.empty();
+                    stateSelect.append($('<option>').val('').text('Select State'));
+                    $.each(data, function(index, state) {
+                        stateSelect.append($('<option>').val(state).text(state));
+                    });
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ': ' + xhr.responseText);
+                }
+            });
+        });
+    });
+
+    // State dropdown
+    $(document).ready(function() {
+        $('#select-state').change(function() {
+            var selectedState = $(this).val();
+            $.ajax({
+                url: '{% url "get_cities_list" %}',
+                type: 'GET',
+                data: {
+                    state: selectedState
+                },
+                success: function(data) {
+                    var citySelect = $('#select-city');
+                    citySelect.empty();
+                    stateSelect.append($('<option>').val('').text('Select State'));
+                    $.each(data, function(index, city) {
+                        citySelect.append($('<option>').val(city).text(city));
+                    });
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ': ' + xhr.responseText);
+                }
+            });
+        });
+    });
+
+    // Submit action
+    document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('dropdown-form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent default form submission
+        const country = document.getElementById('select-country').value;
+        const state = document.getElementById('select-state').value;
+        const city = document.getElementById('select-city').value;
+
+        // Check if any dropdown value is undefined
+        if (country === "" || state === "" || city === "") {
+            alert("Please select values for all dropdowns.");
+            return;
+        }
+
+        const url = `/review/list/${country}/${state}/${city}`;
+        window.location.href = url; // Redirect to the generated URL
+    });
+});
+</script>
+{% endblock %}

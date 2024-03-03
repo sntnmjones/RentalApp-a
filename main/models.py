@@ -9,14 +9,35 @@ from django.core.validators import MaxValueValidator
 ###############################################################################
 # MODELS
 ###############################################################################
-class Address(models.Model):
-    street = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    full_address = models.CharField(max_length=300)
+class Country(models.Model):
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Address: {self.street}, {self.city}, {self.state}"
+        return self.name
+
+
+class State(models.Model):
+    name = models.CharField(max_length=100)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class City(models.Model):
+    name = models.CharField(max_length=100)
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}, {self.state}"
+
+
+class Address(models.Model):
+    full_address = models.CharField(max_length=300)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.full_address
 
 
 class Review(models.Model):

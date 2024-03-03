@@ -11,8 +11,8 @@ from main.models import Address
 from main.utils.database_utils import *
 from main.utils.review_utils import *
 from main.utils.common_utils import *
-from ...forms.reviews.forms import ReviewForm
 from main.utils.address_utils import get_address_dict
+from ...forms.reviews.forms import ReviewForm
 
 logger = logging.getLogger()
 
@@ -29,38 +29,19 @@ def create_review(request, street, city, state, country) -> HttpResponse:
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                address_pk = get_address_pk(full_address)
-                if address_pk is None:
-                    address_pk = Address.objects.create(
-                        street=street,
-                        city=city,
-                        state=state,
-                        full_address=full_address
-                    )
-                    
-                review = form.save(commit=False)
-                review.address = address_pk
-                review.user = request.user
-                with transaction.atomic():
-                    try:
-                        review.save()
-                        logger.info("Review created: %s" % review)
-                    except Exception as e:
-                        logger.error("Could not commit transaction: %s" % e)
-                        transaction.rollback()
-
+                _save_review(request.user, form, full_address)
                 redirect_url = reverse(
                     "list_reviews",
                     kwargs={
                         "city": city,
                         "state": state,
                         "street": street,
-                        "country": address_dict["country"]
+                        "country": country
                     },
                 )
                 return redirect(redirect_url)
         else:
-            if user_reviewed_address(full_address, request.user):
+            if _user_reviewed_address(full_address, request.user):
                 add_error_to_session_cookie('User has already reviewed address', request)
                 redirect_url = reverse(
                     "list_reviews",
@@ -74,7 +55,6 @@ def create_review(request, street, city, state, country) -> HttpResponse:
                 return redirect(redirect_url)
             form = ReviewForm()
             return render(request, common.CREATE_REVIEW_FORM, {"form": form})
-            
 
     current_url = request.build_absolute_uri()
     request.session["relay_state_url"] = current_url
@@ -87,7 +67,6 @@ def list_reviews(request, street, city, state, country):
     List reviews
     """
     full_address = request.session['address']
-    address_dict = get_address_dict(full_address)
     address_pk = get_address_pk(full_address)
     reviews = get_reviews(address_pk=address_pk)
     rating_average = get_rating_average(reviews)
@@ -110,3 +89,64 @@ def list_reviews(request, street, city, state, country):
             "errors": errors
         },
     )
+
+
+def list_reviews_by_city(request, city, state, country):
+    """
+    /review/list/<country>/<state>/<city>
+    List reviews
+    """
+    reviews = get_city_reviews(city, state, country)
+    errors = []
+    if 'errors' in request.session:
+        errors.append(request.session['errors'])
+        request.session.pop('errors', None)
+
+    return render(
+        request,
+        template_name=common.CITY_REVIEWS_TEMPLATE,
+        context={
+            "country": country,
+            "state": state,
+            "city": city,
+            "reviews": reviews,
+            "errors": errors
+        },
+    )
+
+
+def _save_review(user, form: ReviewForm, full_address: str):
+    address_pk = get_address_pk(full_address)
+    address_dict = get_address_dict(full_address)
+    if address_pk is None:
+        country = address_dict["country"]
+        state = address_dict["state"]
+        city = address_dict["city"]
+        country_pk = save_country(country)
+        state_pk = save_state(country_pk, state)
+        city_pk = save_city(state_pk, city)
+        address_pk = Address.objects.create(
+            full_address=full_address,
+            city=city_pk
+        )
+    review = form.save(commit=False)
+    review.address = address_pk
+    review.user = user
+    with transaction.atomic():
+        try:
+            review.save()
+            logger.info("Review created: %s" % review)
+        except Exception as e:
+            logger.error("Could not commit transaction: %s" % e)
+            transaction.rollback()
+
+
+def _user_reviewed_address(full_address, user) -> bool:
+    if address_pk_exists(full_address):
+        address_pk = get_address_pk(full_address)
+        reviews = get_reviews(address_pk)
+        for review in reviews:
+            if review.user == user:
+                return True
+
+    return False

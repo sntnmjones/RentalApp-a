@@ -32,3 +32,4 @@ PASSWORD_RESET_EMAIL_FORM_TEMPLATE = "main/templates/profile/password_reset_emai
 # reviews
 CREATE_REVIEW_FORM = "main/templates/reviews/create_review_form.html"
 REVIEW_TEMPLATE = "main/templates/reviews/review.html"
+CITY_REVIEWS_TEMPLATE = "main/templates/reviews/city_reviews.html"

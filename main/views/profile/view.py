@@ -33,7 +33,7 @@ def forgot_username(request) -> HttpResponse:
         return render(
             request, common.FORGOT_USERNAME_FORM_TEMPLATE, {
                 "message": "If there is a user with that email address, you'll receive an email shortly"
-}
+            }
         )
     return render(request, common.FORGOT_USERNAME_FORM_TEMPLATE)
 
@@ -86,6 +86,7 @@ def _send_username_email(email, user, domain, protocol):
         auth_password=EMAIL_HOST_PASSWORD,
         html_message=email_html,
     )
+
 
 def register(request) -> HttpResponse:
     """

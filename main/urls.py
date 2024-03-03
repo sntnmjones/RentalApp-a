@@ -3,8 +3,6 @@ from main.views.home_page import view as home_page
 from main.views.profile import view as profile
 from main.views.reviews import view as reviews
 from django.contrib.auth import views as auth_views
-import common
-
 
 urlpatterns = [
     path("", home_page.index, name="index"),
@@ -25,5 +23,8 @@ urlpatterns = [
         name='password_reset_complete'
         ),
     path("review/create/<country>/<state>/<city>/<street>", reviews.create_review, name="create_review"),
-    path("review/list/<country>/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews")
+    path("review/list/<country>/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews"),
+    path("review/list/<country>/<state>/<city>", reviews.list_reviews_by_city, name="list_reviews_by_city"),
+    path("/get_states_list", home_page.get_states_list, name="get_states_list"),
+    path("/get_cities_list", home_page.get_cities_list, name="get_cities_list")
 ]

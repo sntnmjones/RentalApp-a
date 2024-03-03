@@ -1,0 +1,29 @@
+{% extends 'main/templates/shared/base.html' %} {% block content %}
+<h2>Reviews for {{ city }}, {{ state }}, {{ country }}</h2>
+
+{% if errors %}
+    Errors:
+    {% for error in errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+{% endif %}
+
+{% if reviews %}
+    {% for address, address_reviews in reviews.items %}
+    <h3>{{ address }}</h3>
+        {% for review in address_reviews %}
+            <h4>{{ review.title }}</h4>
+            <p>Comment: {{ review.comment }}</p>
+            <p>Rating: {{ review.rating }}</p>
+            {% if review.starting_rent %}
+            <p>Starting rent: {{ review.starting_rent}} {% if review.starting_rent_month_year %} on {{ review.starting_rent_month_year }} {% endif %}</p>
+            {% endif %}
+            {% if review.ending_rent %}
+            <p>Ending rent: {{ review.ending_rent}} {% if review.ending_rent_month_year %} on {{ review.ending_rent_month_year }} {% endif %}</p>
+            {% endif %}
+            <p>Published on: {{ review.pub_date }}</p>
+            <p>User: {{ review.user }}</p>
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+{% endblock %}
