@@ -1,6 +1,8 @@
 from collections import defaultdict
 from main.models import Address, Review, State, City, Country
 from django.core.cache import cache
+from django.contrib.auth.models import User
+
 
 import logging
 
@@ -90,6 +92,7 @@ def get_reviews(address_pk: Address):
         cache.set(f'{address_pk}_reviews', reviews)
     return cache.get(f'{address_pk}_reviews')
 
+
 def get_city_reviews(city, state, country):
     cached = cache.get(f'{city}_{state}_{country}_reviews')
     if not cached:
@@ -104,3 +107,14 @@ def get_city_reviews(city, state, country):
                 reviews[address.full_address] = address_reviews
         cache.set(f'{city}_{state}_{country}_reviews', reviews)
     return cache.get(f'{city}_{state}_{country}_reviews')
+
+
+def get_user_reviews(username):
+    """
+    Return reviews that a user has created
+    """
+    try:
+        user = User.objects.get(username=username)
+        return Review.objects.filter(user=user).order_by('-pub_date')
+    except User.DoesNotExist:
+        pass

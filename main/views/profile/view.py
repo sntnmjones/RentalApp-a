@@ -13,9 +13,10 @@ from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
-import common
 from main.forms.profile.forms import NewUserForm, ResetPasswordForm
+from main.utils.database_utils import get_user_reviews
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+import common
 
 logger = logging.getLogger()
 
@@ -129,13 +130,15 @@ def user_profile(request) -> HttpResponse:
     /profile
     Render user profile template
     """
-    if 'login' in request.path:
-        # Remove username from session to avoid 'Object of type method is not JSON serializable' error
-        del request.session[common.USERNAME]
+    # if 'login' in request.path:
+    #     # Remove username from session to avoid 'Object of type method is not JSON serializable' error
+    #     del request.session[common.USERNAME]
+    username = request.user.username
+    user_reviews = get_user_reviews(username)
     return render(
         request,
         template_name=common.USER_PROFILE_TEMPLATE,
-        context={"username": request.user.username}
+        context={"username": username, "user_reviews": user_reviews}
     )
 
 

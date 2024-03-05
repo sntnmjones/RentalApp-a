@@ -1,4 +1,16 @@
 {% extends 'main/templates/shared/base.html' %} {% block content %}
-User profile
-Username: {{ username }}
+<h2>{{ username }} profile</h2>
+
+{% for review in user_reviews %}
+    <h3>{{ review.title }}</h3>
+    <p>Comment: {{ review.comment }}</p>
+    <p>Rating: {{ review.rating }}</p>
+    {% if review.starting_rent %}
+    <p>Starting rent: {{ review.starting_rent}} {% if review.starting_rent_month_year %} on {{ review.starting_rent_month_year }} {% endif %}</p>
+    {% endif %}
+    {% if review.ending_rent %}
+    <p>Ending rent: {{ review.ending_rent}} {% if review.ending_rent_month_year %} on {{ review.ending_rent_month_year }} {% endif %}</p>
+    {% endif %}
+    <p>Published on: {{ review.pub_date }}</p>
+{% endfor %}
 {% endblock %}
