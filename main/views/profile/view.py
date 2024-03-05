@@ -10,8 +10,9 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetVie
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 import common
 from main.forms.profile.forms import NewUserForm, ResetPasswordForm
 from rental_app.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
@@ -122,19 +123,19 @@ def register(request) -> HttpResponse:
     )
 
 
+@login_required
 def user_profile(request) -> HttpResponse:
     """
     /profile
     Render user profile template
     """
-    context = {"username": str(request.POST.get(common.USERNAME))}
     if 'login' in request.path:
         # Remove username from session to avoid 'Object of type method is not JSON serializable' error
         del request.session[common.USERNAME]
     return render(
         request,
         template_name=common.USER_PROFILE_TEMPLATE,
-        context=context
+        context={"username": request.user.username}
     )
 
 
@@ -156,8 +157,8 @@ def user_login(request) -> HttpResponse:
                 login(request, user)
                 if 'relay_state_url' in request.session:
                     return redirect(request.session["relay_state_url"])
-                request.session[common.USERNAME] = user.get_username
-                return user_profile(request)
+                redirect_url = reverse("user_profile")
+                return redirect(redirect_url)
             else:
                 return render(
                     request,
@@ -170,6 +171,9 @@ def user_login(request) -> HttpResponse:
                 template_name=common.LOGIN_FORM_TEMPLATE,
                 context={"login_form": form, "errors": form.errors},
             )
+    elif request.user.username:
+        redirect_url = reverse("user_profile")
+        return redirect(redirect_url)
     form = AuthenticationForm()
     return render(
         request=request,
