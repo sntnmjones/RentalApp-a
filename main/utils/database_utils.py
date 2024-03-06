@@ -118,3 +118,9 @@ def get_user_reviews(username):
         return Review.objects.filter(user=user).order_by('-pub_date')
     except User.DoesNotExist:
         pass
+
+
+def get_user_review(username, full_address):
+    user = User.objects.get(username=username)
+    address = Address.objects.get(full_address=full_address)
+    return Review.objects.get(user=user, address=address)

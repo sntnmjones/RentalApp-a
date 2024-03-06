@@ -2,7 +2,8 @@
 <h2>{{ username }} profile</h2>
 
 {% for review in user_reviews %}
-    <h3>{{ review.title }}</h3>
+    <h3>{{ review.address }}</h3>
+    <p>Title: {{ review.title }}</p>
     <p>Comment: {{ review.comment }}</p>
     <p>Rating: {{ review.rating }}</p>
     {% if review.starting_rent %}
@@ -12,5 +13,11 @@
     <p>Ending rent: {{ review.ending_rent}} {% if review.ending_rent_month_year %} on {{ review.ending_rent_month_year }} {% endif %}</p>
     {% endif %}
     <p>Published on: {{ review.pub_date }}</p>
+    <form method="post" action="{% url 'edit_review' %}">
+        {% csrf_token %}
+        <input type="hidden" name="address" value="{{ review.address }}">
+        <input type="hidden" name="edit" value="true">
+        <button type="submit">Edit</button>
+    </form>
 {% endfor %}
 {% endblock %}

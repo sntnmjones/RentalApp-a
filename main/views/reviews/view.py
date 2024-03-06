@@ -115,6 +115,23 @@ def list_reviews_by_city(request, city, state, country):
     )
 
 
+def edit_review(request):
+    full_address = request.POST.get('address')
+    username = request.user.username
+    logger.info("username: %s updating: %s", request.user.username, full_address)
+    old_form = get_user_review(username, full_address)
+    if request.POST.get('edit') == 'true':
+        form = ReviewForm(instance=old_form)
+
+    else:
+        form = ReviewForm(request.POST, instance=old_form)
+        if form.is_valid():
+            form.save()
+            return redirect('user_profile')
+
+    return render(request, common.UPDATE_REVIEW_FORM, {'form': form, 'address': full_address})
+
+
 def _save_review(user, form: ReviewForm, full_address: str):
     address_pk = get_address_pk(full_address)
     address_dict = get_address_dict(full_address)

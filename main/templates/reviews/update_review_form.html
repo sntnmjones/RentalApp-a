@@ -1,0 +1,12 @@
+{% extends 'main/templates/shared/base.html' %}
+
+{% block content %}
+  <h1>Update a review</h1>
+  <h3>{{ address }}</h3>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="address" value="{{ address }}">
+    {{ form.as_p }}
+    <input type="submit" value="Update review">
+  </form>
+{% endblock %}
