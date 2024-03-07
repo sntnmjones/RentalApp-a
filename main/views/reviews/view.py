@@ -119,17 +119,28 @@ def edit_review(request):
     full_address = request.POST.get('address')
     username = request.user.username
     logger.info("username: %s updating: %s", request.user.username, full_address)
-    old_form = get_user_review(username, full_address)
+    cur_review = get_user_review(username, full_address)
     if request.POST.get('edit') == 'true':
-        form = ReviewForm(instance=old_form)
-
+        form = ReviewForm(instance=cur_review)
     else:
-        form = ReviewForm(request.POST, instance=old_form)
+        form = ReviewForm(request.POST, instance=cur_review)
         if form.is_valid():
             form.save()
             return redirect('user_profile')
 
     return render(request, common.UPDATE_REVIEW_FORM, {'form': form, 'address': full_address})
+
+
+def delete_review(request):
+    full_address = request.POST.get('address')
+    username = request.user.username
+    logger.info("username: %s updating: %s", request.user.username, full_address)
+    cur_review = get_user_review(username, full_address)
+    if request.POST.get('delete') == 'true':
+        logger.info(f"username: {username}, deleting review: {cur_review}")
+        cur_review.delete()
+
+    return redirect('user_profile')
 
 
 def _save_review(user, form: ReviewForm, full_address: str):

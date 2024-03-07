@@ -24,6 +24,7 @@ urlpatterns = [
         ),
     path("review/create/<country>/<state>/<city>/<street>", reviews.create_review, name="create_review"),
     path("review/edit", reviews.edit_review, name="edit_review"),
+    path("review/delete", reviews.delete_review, name="delete_review"),
     path("review/list/<country>/<state>/<city>/<street>", reviews.list_reviews, name="list_reviews"),
     path("review/list/<country>/<state>/<city>", reviews.list_reviews_by_city, name="list_reviews_by_city"),
     path("/get_states_list", home_page.get_states_list, name="get_states_list"),
