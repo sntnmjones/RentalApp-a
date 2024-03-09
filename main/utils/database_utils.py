@@ -11,11 +11,14 @@ logger = logging.getLogger()
 ###############################################################################
 # ADDRESS TABLE
 ###############################################################################
-def get_address_pk(full_address) -> Address:
+def get_address(full_address):
     if full_address:
         cached = cache.get(f'address_{full_address}')
         if not cached:
-            address_pk = Address.objects.get(full_address=full_address)
+            try:
+                address_pk = Address.objects.get(full_address=full_address)
+            except Address.DoesNotExist:
+                return None
             cache.set(f'address_{full_address}', address_pk)
         return cache.get(f'address_{full_address}')
 

@@ -67,7 +67,7 @@ def list_reviews(request, street, city, state, country):
     List reviews
     """
     full_address = request.session['address']
-    address_pk = get_address_pk(full_address)
+    address_pk = get_address(full_address)
     reviews = get_reviews(address_pk=address_pk)
     rating_average = get_rating_average(reviews)
     errors = []
@@ -136,15 +136,17 @@ def delete_review(request):
     username = request.user.username
     logger.info("username: %s updating: %s", request.user.username, full_address)
     cur_review = get_user_review(username, full_address)
+    cur_address = get_address(full_address)
     if request.POST.get('delete') == 'true':
         logger.info(f"username: {username}, deleting review: {cur_review}")
+        cur_address.delete()
         cur_review.delete()
 
     return redirect('user_profile')
 
 
 def _save_review(user, form: ReviewForm, full_address: str):
-    address_pk = get_address_pk(full_address)
+    address_pk = get_address(full_address)
     address_dict = get_address_dict(full_address)
     if address_pk is None:
         country = address_dict["country"]
@@ -171,7 +173,7 @@ def _save_review(user, form: ReviewForm, full_address: str):
 
 def _user_reviewed_address(full_address, user) -> bool:
     if address_pk_exists(full_address):
-        address_pk = get_address_pk(full_address)
+        address_pk = get_address(full_address)
         reviews = get_reviews(address_pk)
         for review in reviews:
             if review.user == user:
