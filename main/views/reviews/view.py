@@ -136,11 +136,9 @@ def delete_review(request):
     username = request.user.username
     logger.info("username: %s updating: %s", request.user.username, full_address)
     cur_review = get_user_review(username, full_address)
-    cur_address = get_address(full_address)
     if request.POST.get('delete') == 'true':
         logger.info(f"username: {username}, deleting review: {cur_review}")
-        cur_address.delete()
-        cur_review.delete()
+        delete_user_review(cur_review)
 
     return redirect('user_profile')
 

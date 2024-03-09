@@ -2,6 +2,7 @@ from collections import defaultdict
 from main.models import Address, Review, State, City, Country
 from django.core.cache import cache
 from django.contrib.auth.models import User
+from main.utils.address_utils import get_address_dict
 
 
 import logging
@@ -88,6 +89,15 @@ def get_city(city: str, state: State) -> City:
 ###############################################################################
 # REVIEW TABLE
 ###############################################################################
+def delete_user_review(cur_review: Review):
+    cur_address = cur_review.address
+    cur_review.delete()
+    cache.delete(f'{cur_address}_reviews')
+    if not get_reviews(cur_address):
+        cur_address.delete()
+        # todo: cascade delete https://github.com/sntnmjones/RentalApp/issues/45
+
+
 def get_reviews(address_pk: Address):
     cached = cache.get(f'{address_pk}_reviews')
     if not cached:

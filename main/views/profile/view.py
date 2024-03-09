@@ -130,10 +130,10 @@ def user_profile(request) -> HttpResponse:
     /profile
     Render user profile template
     """
-    # if 'login' in request.path:
-    #     # Remove username from session to avoid 'Object of type method is not JSON serializable' error
-    #     del request.session[common.USERNAME]
     username = request.user.username
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect(reverse('admin:index'))
+    
     user_reviews = get_user_reviews(username)
     return render(
         request,
