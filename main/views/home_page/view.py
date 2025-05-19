@@ -17,19 +17,20 @@ logger = logging.getLogger()
 
 def index(request):
     if request.method == "POST":
-        if request.POST.get("address"):
-            form = GetAddressForm(request.POST)
-            if form.errors:
-                return _get_index_error_form(request, form)
-            if form.is_valid():
-                full_address = form.cleaned_data["address"]
-                request.session['address'] = full_address
-                address_dict = get_address_dict(full_address)
+        pass
+        # if request.POST.get("address"):
+        #     form = GetAddressForm(request.POST)
+        #     if form.errors:
+        #         return _get_index_error_form(request, form)
+        #     if form.is_valid():
+        #         full_address = form.cleaned_data["address"]
+        #         request.session['address'] = full_address
+        #         address_dict = get_address_dict(full_address)
 
-                if address_pk_exists(full_address):
-                    return _list_reviews(address_dict)
-                else:
-                    return _address_not_found(request, full_address, address_dict, form)
+        #         if address_pk_exists(full_address):
+        #             return _list_reviews(address_dict)
+        #         else:
+        #             return _address_not_found(request, full_address, address_dict, form)
     else:
         countries = get_countries()
         return _get_get_address_form(request, countries)

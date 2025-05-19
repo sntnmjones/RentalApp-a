@@ -29,7 +29,7 @@ def create_review(request, street, city, state, country) -> HttpResponse:
         if request.method == "POST":
             form = ReviewForm(request.POST)
             if form.is_valid():
-                _save_review(request.user, form, full_address)
+                # _save_review(request.user, form, full_address)
                 redirect_url = reverse(
                     "list_reviews",
                     kwargs={
@@ -41,18 +41,18 @@ def create_review(request, street, city, state, country) -> HttpResponse:
                 )
                 return redirect(redirect_url)
         else:
-            if _user_reviewed_address(full_address, request.user):
-                add_error_to_session_cookie('User has already reviewed address', request)
-                redirect_url = reverse(
-                    "list_reviews",
-                    kwargs={
-                        "city": city,
-                        "state": state,
-                        "street": street,
-                        "country": address_dict["country"]
-                    },
-                )
-                return redirect(redirect_url)
+            # if _user_reviewed_address(full_address, request.user):
+            #     add_error_to_session_cookie('User has already reviewed address', request)
+            #     redirect_url = reverse(
+            #         "list_reviews",
+            #         kwargs={
+            #             "city": city,
+            #             "state": state,
+            #             "street": street,
+            #             "country": address_dict["country"]
+            #         },
+            #     )
+            #     return redirect(redirect_url)
             form = ReviewForm()
             return render(request, common.CREATE_REVIEW_FORM, {"form": form})
 
@@ -68,8 +68,8 @@ def list_reviews(request, street, city, state, country):
     """
     full_address = request.session['address']
     address_pk = get_address(full_address)
-    reviews = get_reviews(address_pk=address_pk)
-    rating_average = get_rating_average(reviews)
+    # reviews = get_reviews(address_pk=address_pk)
+    # rating_average = get_rating_average(reviews)
     errors = []
     if 'errors' in request.session:
         errors.append(request.session['errors'])
@@ -84,8 +84,8 @@ def list_reviews(request, street, city, state, country):
             "state": state,
             "city": city,
             "street": street,
-            "reviews": reviews,
-            "rating_average": rating_average,
+            # "reviews": reviews,
+            # "rating_average": rating_average,
             "errors": errors
         },
     )
@@ -96,7 +96,7 @@ def list_reviews_by_city(request, city, state, country):
     /review/list/<country>/<state>/<city>
     List reviews
     """
-    reviews = get_city_reviews(city, state, country)
+    # reviews = get_city_reviews(city, state, country)
     errors = []
     if 'errors' in request.session:
         errors.append(request.session['errors'])
@@ -109,7 +109,7 @@ def list_reviews_by_city(request, city, state, country):
             "country": country,
             "state": state,
             "city": city,
-            "reviews": reviews,
+            # "reviews": reviews,
             "errors": errors
         },
     )
@@ -119,26 +119,31 @@ def edit_review(request):
     full_address = request.POST.get('address')
     username = request.user.username
     logger.info("username: %s updating: %s", request.user.username, full_address)
-    cur_review = get_user_review(username, full_address)
+    # cur_review = get_user_review(username, full_address)
     if request.POST.get('edit') == 'true':
-        form = ReviewForm(instance=cur_review)
+        pass
+        # form = ReviewForm(instance=cur_review)
     else:
-        form = ReviewForm(request.POST, instance=cur_review)
-        if form.is_valid():
-            form.save()
-            return redirect('user_profile')
+        pass
+        # form = ReviewForm(request.POST, instance=cur_review)
+        # if form.is_valid():
+        #     form.save()
+        #     return redirect('user_profile')
 
-    return render(request, common.UPDATE_REVIEW_FORM, {'form': form, 'address': full_address})
+    # response = {'form': form, 'address': full_address}
+    response = {'address': full_address}
+    return render(request, common.UPDATE_REVIEW_FORM, response)
 
 
 def delete_review(request):
     full_address = request.POST.get('address')
     username = request.user.username
     logger.info("username: %s updating: %s", request.user.username, full_address)
-    cur_review = get_user_review(username, full_address)
+    # cur_review = get_user_review(username, full_address)
     if request.POST.get('delete') == 'true':
-        logger.info(f"username: {username}, deleting review: {cur_review}")
-        delete_user_review(cur_review)
+        pass
+        # logger.info(f"username: {username}, deleting review: {cur_review}")
+        # delete_user_review(cur_review)
 
     return redirect('user_profile')
 
@@ -150,23 +155,23 @@ def _save_review(user, form: ReviewForm, full_address: str):
         country = address_dict["country"]
         state = address_dict["state"]
         city = address_dict["city"]
-        country_pk = save_country(country)
-        state_pk = save_state(country_pk, state)
-        city_pk = save_city(state_pk, city)
-        address_pk = Address.objects.create(
-            full_address=full_address,
-            city=city_pk
-        )
-    review = form.save(commit=False)
-    review.address = address_pk
-    review.user = user
-    with transaction.atomic():
-        try:
-            review.save()
-            logger.info("Review created: %s" % review)
-        except Exception as e:
-            logger.error("Could not commit transaction: %s" % e)
-            transaction.rollback()
+    #     country_pk = save_country(country)
+    #     state_pk = save_state(country_pk, state)
+    #     city_pk = save_city(state_pk, city)
+    #     address_pk = Address.objects.create(
+    #         full_address=full_address,
+    #         city=city_pk
+    #     )
+    # review = form.save(commit=False)
+    # review.address = address_pk
+    # review.user = user
+    # with transaction.atomic():
+    #     try:
+    #         review.save()
+    #         logger.info("Review created: %s" % review)
+    #     except Exception as e:
+    #         logger.error("Could not commit transaction: %s" % e)
+    #         transaction.rollback()
 
 
 def _user_reviewed_address(full_address, user) -> bool:

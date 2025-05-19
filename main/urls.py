@@ -6,6 +6,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("", home_page.index, name="index"),
+    
+    # Profile urls
     path("register", profile.register, name="register"),
     path("login", profile.user_login, name="user_login"),
     path("logout", profile.user_logout, name="user_logout"),
@@ -22,6 +24,8 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name='password_reset_complete'
         ),
+
+    # Review urls
     path("review/create/<country>/<state>/<city>/<street>", reviews.create_review, name="create_review"),
     path("review/edit", reviews.edit_review, name="edit_review"),
     path("review/delete", reviews.delete_review, name="delete_review"),
