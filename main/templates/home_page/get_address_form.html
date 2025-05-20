@@ -1,4 +1,5 @@
 {% block content %}
+
 <head>
   <link href="https://js.radar.com/v4.1.6/radar.css" rel="stylesheet">
   <script src="https://js.radar.com/v4.1.6/radar.min.js"></script>
@@ -10,15 +11,31 @@
 </form>
 
 <script type="text/javascript">
+  const formId = "autocomplete-form"
+  let isItemSelected = false;
   Radar.initialize('prj_test_pk_c6048f46bd4f54694cbf73f6ad6882fdf6f163dd');
   
   Radar.ui.autocomplete({
     container: 'autocomplete',
     width: '600px',
     onSelection: (address) => {
-      document.getElementById('autocomplete-form').submit();
+      isItemSelected = true;
+      document.getElementById(formId).submit();
     },
   });
 
+  document.getElementById(formId).addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        if (isItemSelected) {
+          // Proceed with the action (e.g., form submission)
+            alert('Item selected: ' + document.getElementById(formId).value);
+        } else {
+          event.preventDefault(); // Prevent form submission or other actions
+          alert('Please select an item from the autocomplete suggestions.');
+        }
+    }
+  });
+
 </script>
+
 {% endblock %}

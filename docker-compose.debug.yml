@@ -3,7 +3,7 @@ version: '3.4'
 services:
   web:
     build: .
-    command: bash -c "python3 .venv/lib/python3.10/site-packages/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
+    command: bash -c "python venv/bin/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
     container_name: rental_app
     volumes:
       - .:/rental_app
