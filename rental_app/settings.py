@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
-import logging
+import structlog
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "django_structlog",
     "rest_framework",
 ]
 
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_structlog.middlewares.RequestMiddleware",
     "django.middleware.cache.FetchFromCacheMiddleware", # must remain here
 ]
 
@@ -159,13 +161,45 @@ EMAIL_HOST_PASSWORD = str(os.getenv("EMAIL_HOST_PASSWORD"))
 # LOGGING CONFIGURATION
 ############################################################
 THIRTY_DAYS_IN_HOURS = 30 * 24
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "root": {"level": "INFO", "handlers": ["default"], "propagate": True},
+#     "formatters": {
+#         "verbose": {
+#             "format": "%(asctime)s [%(levelname)s][pid:%(process)d][thread:%(thread)d][%(pathname)s:%(lineno)d] %(message)s"
+#         }
+#     },
+#     "handlers": {
+#         "default": {
+#             "level": "INFO",
+#             "class": "logging.handlers.TimedRotatingFileHandler",
+#             "filename": "application.log",
+#             "when": "H",
+#             "backupCount": THIRTY_DAYS_IN_HOURS,
+#             "formatter": "verbose",
+#         },
+#     },
+#     "loggers": {
+#         "default": {
+#             "handlers": ["default"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+# }
+
+############################################################
+# STRUCTLOGGING CONFIGURATION
+############################################################
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "root": {"level": "INFO", "handlers": ["default"], "propagate": True},
     "formatters": {
-        "verbose": {
-            "format": "%(asctime)s [%(levelname)s][pid:%(process)d][thread:%(thread)d][%(pathname)s:%(lineno)d] %(message)s"
+        "json_formatter": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(),
         }
     },
     "handlers": {
@@ -175,7 +209,7 @@ LOGGING = {
             "filename": "application.log",
             "when": "H",
             "backupCount": THIRTY_DAYS_IN_HOURS,
-            "formatter": "verbose",
+            "formatter": "json_formatter",
         },
     },
     "loggers": {
@@ -186,6 +220,23 @@ LOGGING = {
         },
     },
 }
+
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    cache_logger_on_first_use=True,
+)
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
