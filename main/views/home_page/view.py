@@ -17,7 +17,9 @@ logger = logging.getLogger()
 
 def index(request):
     if request.method == "POST":
-        pass
+        if request.POST.get("address_data"):
+            # Example request: {"addressLabel":"123 Elges Way","number":"123","street":"Elges Way","city":"Sparks","state":"Nevada","stateCode":"NV","postalCode":"89431","county":"Washoe","countryCode":"US","formattedAddress":"123 Elges Way, Sparks, NV 89431 US","layer":"address","latitude":39.5593295,"longitude":-119.744036699468,"geometry":{"type":"Point","coordinates":[-119.744036699468,39.5593295]},"distance":2596.3519268637515,"confidence":"exact","country":"United States","countryFlag":"🇺🇸"}
+            return JsonResponse(request.POST.get("address_data"), safe=False)
         # if request.POST.get("address"):
         #     form = GetAddressForm(request.POST)
         #     if form.errors:

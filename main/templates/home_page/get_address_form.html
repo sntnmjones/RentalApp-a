@@ -8,6 +8,7 @@
 <form id="autocomplete-form" action="" method="post">
   {% csrf_token %}
   <span>Address: </span><input type="text" id="autocomplete" name="address">
+  <input type="hidden" id="address-data" name="address_data">
 </form>
 
 <script type="text/javascript">
@@ -20,6 +21,7 @@
     width: '600px',
     onSelection: (address) => {
       isItemSelected = true;
+      document.getElementById('address-data').value = JSON.stringify(address);
       document.getElementById(formId).submit();
     },
   });
