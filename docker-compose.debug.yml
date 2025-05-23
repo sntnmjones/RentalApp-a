@@ -1,13 +1,23 @@
-version: '3.4'
-
 services:
   web:
     build: .
-    command: bash -c "python venv/bin/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
+    # command: bash -c "python3 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
+    # command: bash -c "python venv/bin/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
+    command: bash -c "python -m debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
     container_name: rental_app
-    volumes:
-      - .:/rental_app
+    # volumes:
+    #   - .:/rental_app_local
     ports:
       - "8000:8000"
       - "5678:5678"
-    
+    env_file:
+      - ./.env
+    depends_on:
+      - sql_db
+  sql_db:
+    image: postgres
+    container_name: sql_db
+    environment:
+      - POSTGRES_USER=hello_django
+      - POSTGRES_PASSWORD=hello_django
+      - POSTGRES_DB=hello_django_dev

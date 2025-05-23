@@ -16,7 +16,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
+is_prod = str(os.getenv("STAGE")) == 'prod'
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -87,8 +87,7 @@ WSGI_APPLICATION = "rental_app.wsgi.application"
 ############################################################
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 POSTGRES_PASSWORD = str(os.getenv("POSTGRES_PASSWORD"))
-DATABASES = {
-    "default": {
+db_prod = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres.wwmhgvfkblgtbaugqizz",
@@ -96,7 +95,21 @@ DATABASES = {
         "HOST": "aws-0-us-west-1.pooler.supabase.com",
         "PORT": "6543",
     }
+db_local = {
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
+    }
+
+db_config = db_prod if is_prod else db_local
+
+DATABASES = {
+    "default": db_config
 }
+
 
 
 SESSION_COOKIE_AGE = 3600  # 60 minutes in seconds
