@@ -11,15 +11,16 @@ local_rebuild:
 local_debug:
 	docker-compose -f docker-compose.debug.yml up
 
-migrate:
+local_setup:
 	docker-compose exec web python manage.py makemigrations
 	docker-compose exec web python manage.py migrate
 
 local_down:
 	docker-compose -f docker-compose.local.yml down || echo "no containers up"
+	docker-compose -f docker-compose.debug.yml down || echo "no containers up"
 
 remove_images: local_down
-	docker rmi -f $(docker images -aq) || echo "no images present"
+	docker rmi -f `docker images -aq` || echo "no images present"
 
 remove_containers: remove_images
-	docker rm $(docker ps -aq) || echo "no containers present"
+	docker rm `docker ps -aq` || echo "no containers present"

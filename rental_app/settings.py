@@ -28,6 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv("SECRET_KEY"))
 
+SESSION_COOKIE_AGE = 3600  # 60 minutes in seconds
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str(os.getenv("DEBUG"))
 
@@ -109,10 +111,6 @@ db_config = db_prod if is_prod else db_local
 DATABASES = {
     "default": db_config
 }
-
-
-
-SESSION_COOKIE_AGE = 3600  # 60 minutes in seconds
 
 
 # Password validation

@@ -1,6 +1,6 @@
 # The first instruction is what image we want to base our container on
 # We Use an official Python runtime as a parent image
-FROM python:3.13-alpine
+FROM python:3.13
 
 # The enviroment variable ensures that the python output is set straight
 # to the terminal with out buffering it first
@@ -8,7 +8,9 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt update && \
     # Install postgres packages
-    apt install -y libpq-dev gcc
+    apt install -y libpq-dev gcc && \
+    # Install awscli
+    apt install -y awscli
 
 # create root directory for our project in the container
 RUN mkdir /rental_app
@@ -25,4 +27,4 @@ RUN pip install -r requirements.txt
 # Collects the static files into STATIC_ROOT.
 RUN python3 manage.py collectstatic --noinput
 
-EXPOSE 8000 5678
+EXPOSE 8000 5678 9000

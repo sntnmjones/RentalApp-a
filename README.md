@@ -12,4 +12,7 @@ source venv/bin/activate
 ```
 
 Spin the service up and down using the Makefile:  
-`make <command>`
+start: `make local_build`  
+setup local db: `make local_setup`  
+stop: `make local_down`  
+nuke it all: `make remove_images`  

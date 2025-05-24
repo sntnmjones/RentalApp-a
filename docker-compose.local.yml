@@ -1,16 +1,15 @@
 services:
   web:
     build: .
-    command: bash -c "python3 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 8000"
+    command: bash -c "python3 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 9000"
     container_name: rental_app
-    # volumes:
-    #   - .:/rental_app_local
     ports:
-      - "8000:8000"
+      - "9000:9000"
     env_file:
       - ./.env
     depends_on:
       - sql_db
+      - dynamodb-local
   sql_db:
     image: postgres
     container_name: sql_db
@@ -18,3 +17,8 @@ services:
       - POSTGRES_USER=hello_django
       - POSTGRES_PASSWORD=hello_django
       - POSTGRES_DB=hello_django_dev
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
