@@ -4,10 +4,6 @@
 
 <link rel="stylesheet" href="{% static 'css/home_page.css' %}">
 
-{% if get_address_form %}
-    {% include "main/templates/home_page/get_address_form.html" %}
-{% endif %}
-
 {% if show_address %}
     {% if address_found %}
     {% else %}

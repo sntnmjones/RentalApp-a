@@ -14,6 +14,7 @@ local_debug:
 local_setup:
 	docker-compose exec web python manage.py makemigrations
 	docker-compose exec web python manage.py migrate
+	python local/setup_local.py
 
 local_down:
 	docker-compose -f docker-compose.local.yml down || echo "no containers up"

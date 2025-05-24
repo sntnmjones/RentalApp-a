@@ -5,7 +5,8 @@
   <script src="https://js.radar.com/v4.1.6/radar.min.js"></script>
 </head>    
 
-<form id="autocomplete-form" action="" method="post">
+<!-- leave action="" to send to current url -->
+<form id="autocomplete-form" action="/" method="post">
   {% csrf_token %}
   <span>Address: </span><input type="text" id="autocomplete" name="address">
   <input type="hidden" id="address-data" name="address_data">

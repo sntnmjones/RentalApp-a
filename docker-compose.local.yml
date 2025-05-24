@@ -3,6 +3,8 @@ services:
     build: .
     command: bash -c "python3 -m uvicorn rental_app.asgi:application --host 0.0.0.0 --port 9000"
     container_name: rental_app
+    volumes:
+      - .:/rental_app
     ports:
       - "9000:9000"
     env_file:

@@ -3,6 +3,7 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'index' %}">rentalranter.com</a>
+    {% include "main/templates/home_page/get_address_form.html" %}
     <button
       class="navbar-toggler"
       type="button"
@@ -25,7 +26,7 @@
         </form>
         <form action="{% url 'user_profile' %}" method="post">
           {% csrf_token %}
-          <input type="hidden" name="username" value="{{ user }}">
+          <input type="hidden" name="username" value="{{ user }}" />
           <li class="nav-item ms-auto">
             <button class="btn btn-primary" type="submit">{{user}}</button>
           </li>
